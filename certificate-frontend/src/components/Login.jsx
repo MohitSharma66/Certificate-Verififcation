@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Updated import for navigation
-import Web3 from 'web3';
-import './Login.css'; // Optional: For styling
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
+import './Login.css';
 
 const Login = () => {
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
     setError('');
@@ -13,21 +14,11 @@ const Login = () => {
     // Check if MetaMask is installed
     if (window.ethereum) {
       try {
-        // Request account access if needed
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        // Request MetaMask login
+        await login();
         
-        // Initialize Web3 with MetaMask's provider
-        const web3 = new Web3(window.ethereum);
-        
-        // Get the logged-in account
-        const accounts = await web3.eth.getAccounts();
-        
-        if (accounts.length > 0) {
-          // Successful login - navigate to form page
-          navigate('/form');
-        } else {
-          setError('No account found. Please log into MetaMask.');
-        }
+        // Navigate to form page upon successful login
+        navigate('/form');
       } catch (err) {
         setError('MetaMask connection was declined. Please try again.');
       }
@@ -40,8 +31,6 @@ const Login = () => {
     <div className="login-container">
       <h2>Institute Login</h2>
       {error && <p className="error">{error}</p>}
-      
-      {/* Button to initiate MetaMask login */}
       <button onClick={handleLogin}>Login with MetaMask</button>
     </div>
   );

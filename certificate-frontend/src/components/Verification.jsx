@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { verifyCertificate } from '../blockchain/certificate'; // Import from certificate.js
 import './Verification.css'; // Optional: For styling
 

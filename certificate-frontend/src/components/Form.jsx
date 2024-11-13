@@ -25,6 +25,13 @@ const Form = () => {
     setError('');
     setSuccessMessage('');
 
+    // Validate numeric fields
+    const { year, semester, studentUniqueId, instituteId } = formData;
+    if (!/^\d+$/.test(year) || !/^\d+$/.test(semester) || !/^\d+$/.test(studentUniqueId) || !/^\d+$/.test(instituteId)) {
+      setError('Year, Semester, Institute ID, and Certificate Unique ID must be numerical.');
+      return;
+    }
+
     try {
       // Call the issueCertificate function from blockchain
       await issueCertificate(
@@ -35,6 +42,7 @@ const Form = () => {
         `${formData.year}-${formData.semester}`
       );
       setSuccessMessage('Certificate information submitted successfully!');
+      
       // Optionally, reset form after successful submission
       setFormData({
         instituteName: '',
@@ -46,7 +54,8 @@ const Form = () => {
         course: '',
       });
     } catch (err) {
-      setError('Failed to submit certificate information. Please try again.');
+      setError(`Failed to submit certificate information. Error: ${err.message || err}`);
+      console.error(err);
     }
   };
 
@@ -70,7 +79,7 @@ const Form = () => {
         <div className="form-group">
           <label htmlFor="instituteId">Institute ID:</label>
           <input
-            type="text"
+            type="number"
             id="instituteId"
             name="instituteId"
             value={formData.instituteId}
@@ -92,7 +101,7 @@ const Form = () => {
         <div className="form-group">
           <label htmlFor="year">Year:</label>
           <input
-            type="text"
+            type="number"
             id="year"
             name="year"
             value={formData.year}
@@ -103,7 +112,7 @@ const Form = () => {
         <div className="form-group">
           <label htmlFor="semester">Semester:</label>
           <input
-            type="text"
+            type="number"
             id="semester"
             name="semester"
             value={formData.semester}
@@ -114,7 +123,7 @@ const Form = () => {
         <div className="form-group">
           <label htmlFor="studentUniqueId">Certificate Unique ID:</label>
           <input
-            type="text"
+            type="number"
             id="studentUniqueId"
             name="studentUniqueId"
             value={formData.studentUniqueId}
