@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import './Login.css';
+import BigText from "./BigText"
 
 const Login = () => {
   const [error, setError] = useState('');
@@ -28,11 +29,14 @@ const Login = () => {
   };
 
   return (
+    <>
+    <BigText/>
     <div className="login-container">
       <h2>Institute Login</h2>
       {error && <p className="error">{error}</p>}
-      <button onClick={handleLogin}>Login with MetaMask</button>
+      <button id="login_btn" onClick={handleLogin}>Login with MetaMask</button>
     </div>
+    </>
   );
 };
 

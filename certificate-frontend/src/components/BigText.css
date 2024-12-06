@@ -1,0 +1,26 @@
+.hero-text {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+  }
+  
+  .hero-text h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+  }
+  
+  .hero-text .highlight {
+    color: #28a745;
+    font-style: italic;
+  }
+  
+  .hero-text .sub-text {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #555;
+    margin-top: 15px;
+  }
+  

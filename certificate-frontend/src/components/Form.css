@@ -1,6 +1,6 @@
 .form-container {
     color: black;
-    width: 400px;
+    width: 70vh;
     margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -17,15 +17,19 @@
     margin-bottom: 15px;
   }
   
-  label {
-    display: block;
+  .form-group > label {
+    display: inline-block;
     margin-bottom: 5px;
+    width:200px;
+    text-align:left;
   }
   
-  input {
-    width: 100%;
+  .form-group > input {
+    width: 50vh;
     padding: 8px;
     box-sizing: border-box;
+    border: none;
+    color:black;
   }
   
   button {
