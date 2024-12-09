@@ -54,6 +54,14 @@
     background-color: #e9ffe9;
     border-radius: 5px;
   }
+
+  .failure {
+    margin-top: 20px;
+    padding: 10px;
+    border-color: #dc3545;
+    background-color: #ffe9e9;
+    border-radius: 5px;
+  }
   
   .error {
     color: red;

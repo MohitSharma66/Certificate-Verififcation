@@ -16,17 +16,14 @@ const getContractInstance = async () => {
         }
 
         const deployedNetwork = CertificateRegistry.networks[networkId];
-        console.log("Deployed Network Info:", deployedNetwork); // Log the deployed network info
 
         const contractAddress = deployedNetwork && deployedNetwork.address;
         if (!contractAddress) {
             console.error("Contract address not found for this network. Is the contract deployed?");
             return null;
         }
-        console.log("Contract Address:", contractAddress); // Log the contract address
 
         const abi = CertificateRegistry.abi;
-        console.log("Contract ABI:", abi); // Log the ABI for debugging
 
         return new web3.eth.Contract(abi, contractAddress);
     } catch (error) {
@@ -44,7 +41,6 @@ export const issueCertificate = async (id, studentName, courseName, institution,
 
     try {
         const accounts = await web3.eth.getAccounts();
-        console.log("User Account:", accounts[0]); // Log the user account
 
         const gasLimit = 6721975;  // Set your custom gas limit here (adjust as needed)
         
@@ -63,18 +59,20 @@ export const issueCertificate = async (id, studentName, courseName, institution,
 export const verifyCertificate = async (id) => {
     const contract = await getContractInstance();
     if (!contract) {
-        console.error("Failed to load contract instance.");
-        return;
+      console.error("Failed to load contract instance.");
+      return false;
     }
-
+  
     try {
-        const gasLimit = 6721975;  // Set your custom gas limit here (adjust as needed)
-        
-        return contract.methods.verifyCertificate(id).call({
-            gas: gasLimit  // Add gas limit here
-        });
+      // Assuming verifyCertificate returns a boolean indicating validity
+      const isValid = await contract.methods.verifyCertificate(id).call();
+      console.log(`Certificate with ID ${id} is valid: ${isValid}`);
+      return isValid;
     } catch (error) {
-        console.error("Error verifying certificate:", error);
-        throw error;
+      console.error("Error verifying certificate:", error);
+      return false; // Return false in case of an error
     }
 };
+
+  
+

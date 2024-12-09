@@ -25,6 +25,7 @@
   }
   
   .form-group > input {
+    background-color: #bda5ed;
     width: 50vh;
     padding: 8px;
     box-sizing: border-box;

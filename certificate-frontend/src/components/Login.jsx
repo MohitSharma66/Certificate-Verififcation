@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import BigText from "./BigText";
 import './Login.css';
-import BigText from "./BigText"
 
 const Login = () => {
   const [error, setError] = useState('');
@@ -28,13 +28,25 @@ const Login = () => {
     }
   };
 
+  const handleVerification = async () => {
+    setError('');
+    navigate('/verification');
+  }
+
   return (
     <>
     <BigText/>
-    <div className="login-container">
-      <h2>Institute Login</h2>
-      {error && <p className="error">{error}</p>}
-      <button id="login_btn" onClick={handleLogin}>Login with MetaMask</button>
+    <div style={{display: 'flex'}}>
+      <div className="login-container">
+        <h2>Institute Login</h2>
+        {error && <p className="error">{error}</p>}
+        <button id="login_btn" onClick={handleLogin}>Login with MetaMask</button>
+      </div>
+      <div className="login-container">
+        <h2>Verification Page</h2>
+        {error && <p className="error">{error}</p>}
+        <button id="login_btn" onClick={handleVerification}>Go to Verification Page</button>
+      </div>
     </div>
     </>
   );
