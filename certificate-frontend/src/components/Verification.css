@@ -21,11 +21,15 @@
   
   .form-group {
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
   }
   
-  label {
+  .form-group > label {
     
     margin-bottom: 5px;
+    font-size: 3.5vh;
+    width: 100%;
   }
   
   input {

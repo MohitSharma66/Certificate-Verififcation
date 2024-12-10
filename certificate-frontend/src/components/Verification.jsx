@@ -29,7 +29,7 @@ const Verification = () => {
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleVerification}>
         <div className="form-group">
-          <label htmlFor="certificateId" style={{ marginLeft: '55px' }}>Certificate ID:</label>
+          <label htmlFor="certificateId" style={{ marginLeft: '10px' }}>Certificate ID:</label>
           <input
             type="text"
             id="certificateId"
