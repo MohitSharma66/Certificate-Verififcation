@@ -28,6 +28,7 @@
   }
   
   .form-group > input {
+    background-color: #bda5ed;
     width: 50vh;
     height:5vh;
     text-transform: uppercase;

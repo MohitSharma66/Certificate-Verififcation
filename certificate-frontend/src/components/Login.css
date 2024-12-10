@@ -8,10 +8,10 @@
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
   background-color: #fff;
   font-family: 'Arial', sans-serif;
-  /* display: flex; 
+  display: flex; 
   flex-direction: column;
   justify-content: center;
-  align-items: center; */
+  align-items: center;
 }
 
 h2 {

@@ -35,6 +35,8 @@ contract CertificateRegistry {
     }
 
     function verifyCertificate(uint256 _id) public view returns (bool) {
-        return certificates[_id].isValid;
-    }
+    Certificate memory cert = certificates[_id];
+    return cert.isValid; // Only return the validity status (true or false)
+}
+
 }
