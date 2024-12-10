@@ -1,6 +1,6 @@
 .verification-container {
     color: black;
-    width: 400px;
+    width: 500px;
     margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -47,7 +47,7 @@
     background-color: #0056b3;
   }
   
-  .verification-result {
+  .verification-result .success{
     margin-top: 20px;
     padding: 10px;
     border: 1px solid #28a745;
@@ -55,7 +55,7 @@
     border-radius: 5px;
   }
 
-  .failure {
+  .verification-result .failure {
     margin-top: 20px;
     padding: 10px;
     border-color: #dc3545;
