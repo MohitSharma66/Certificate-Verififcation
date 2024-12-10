@@ -8,6 +8,7 @@ const Form = () => {
     instituteId: '',
     studentName: '',
     year: '',
+    departmenr:'',
     semester: '',
     studentUniqueId: '',
     course: '',
@@ -105,6 +106,17 @@ const Form = () => {
             id="year"
             name="year"
             value={formData.year}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="Department">Department:</label>
+          <input
+            type="text"
+            id="department"
+            name="department"
+            value={formData.department}
             onChange={handleChange}
             required
           />

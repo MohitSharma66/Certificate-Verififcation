@@ -1,6 +1,7 @@
 .verification-container {
     color: black;
-    width: 400px;
+    width: 600px;
+    height:600px;
     margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -23,7 +24,7 @@
   }
   
   label {
-    display: block;
+    
     margin-bottom: 5px;
   }
   
