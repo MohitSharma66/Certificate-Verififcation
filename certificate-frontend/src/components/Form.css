@@ -1,6 +1,6 @@
 .form-container {
     color: black;
-    width: 160vh;
+    width: 120vh;
     margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -23,10 +23,10 @@
   }
 
   .form-container .two-parts .second-part .course-group > label{
-    font-size:3vh;
+    font-size:2vh;
     margin-bottom: 5px;
     text-align: left;
-    max-width: 30vh;
+    width:5vh;
     margin-right:100px;
   }
 
