@@ -12,6 +12,7 @@ const Form = () => {
     semester: '',
     studentUniqueId: '',
     course: '',
+    CGPA: '',
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
@@ -33,25 +34,53 @@ const Form = () => {
     setError('');
     setSuccessMessage('');
 
-    // Validate numeric fields
-    const { year, semester, studentUniqueId, instituteId } = formData;
-    if (!/^\d+$/.test(year) || !/^\d+$/.test(semester) || !/^\d+$/.test(studentUniqueId) || !/^\d+$/.test(instituteId)) {
+    const { instituteName, studentName, year, semester, studentUniqueId, instituteId, CGPA } = formData;
+
+    // Validate fields
+    if (!/^[a-zA-Z\s]+$/.test(instituteName)) {
+      setError('Institute Name must only contain alphabets and spaces.');
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(studentName)) {
+      setError('Student Name must only contain alphabets and spaces.');
+      return;
+    }
+    if (!/^\d+$/.test(year) || !/^\d+$/.test(semester) || !/^\d+$/.test(instituteId) || !/^\d+$/.test(studentUniqueId)) {
       setError('Year, Semester, Institute ID, and Certificate Unique ID must be numerical.');
+      return;
+    }
+    if (!/^\d+(\.\d+)?$/.test(CGPA)) {
+      setError('CGPA must be a valid decimal number.');
       return;
     }
 
     try {
+      console.log({
+        studentUniqueId: formData.studentUniqueId,
+        studentName: formData.studentName,
+        course: formData.course,
+        instituteName: formData.instituteName,
+        instituteId: formData.instituteId,
+        year: formData.year,
+        semester: formData.semester,
+        CGPA: formData.CGPA
+      });
+      
       // Call the issueCertificate function from blockchain
       await issueCertificate(
-        formData.studentUniqueId,
-        formData.studentName,
-        formData.course,
-        formData.instituteName,
-        `${formData.year}-${formData.semester}`
-      );
+        parseInt(formData.studentUniqueId),    // uint256 _id
+        formData.studentName,                  // string memory _studentName
+        formData.course,                       // string memory _courseName
+        formData.instituteName,                // string memory _institution
+        parseInt(formData.instituteId),        // uint256 _instituteId
+        parseInt(formData.year),               // uint256 _year
+        parseInt(formData.semester),           // uint256 _semester
+        formData.CGPA                          // string memory _CGPA
+      );         
+
       setSuccessMessage('Certificate information submitted successfully!');
-      
-      // Optionally, reset form after successful submission
+
+      // Reset form after successful submission
       setFormData({
         instituteName: '',
         instituteId: '',
@@ -60,6 +89,7 @@ const Form = () => {
         semester: '',
         studentUniqueId: '',
         course: '',
+        CGPA: ''
       });
     } catch (err) {
       setError(`Failed to submit certificate information. Error: ${err.message || err}`);
@@ -99,6 +129,17 @@ const Form = () => {
             id="instituteId"
             name="instituteId"
             value={formData.instituteId}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="CGPA">CGPA:</label>
+          <input
+            type="text"
+            id="CGPA"
+            name="CGPA"
+            value={formData.CGPA}
             onChange={handleChange}
             required
           />
