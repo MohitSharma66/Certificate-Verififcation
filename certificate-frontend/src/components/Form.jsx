@@ -8,7 +8,6 @@ const Form = () => {
     instituteId: '',
     studentName: '',
     year: '',
-    department:'',
     semester: '',
     studentUniqueId: '',
     course: '',
@@ -16,13 +15,6 @@ const Form = () => {
   }); 
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
-  const [courses , setCourses] = useState([{
-    id:1,
-    name:"Course 1:"
-  } , {
-    id:2,
-    name:"Course 2:"
-  }])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +77,6 @@ const Form = () => {
         instituteName: '',
         instituteId: '',
         studentName: '',
-        department: '',
         year: '',
         semester: '',
         studentUniqueId: '',
@@ -98,18 +89,11 @@ const Form = () => {
     }
   };
 
-  const AddCourse = () =>{
-    setCourses([...courses , {
-      id: courses.length +1,
-      name: `Course ${courses.length +1}:`
-    }]);
-  }
-
   return (
     <div className="form-container">
       <h2>Certificate Issuance Form</h2>
-      {error && <p className="error">{error}</p>}
-      {successMessage && <p className="success">{successMessage}</p>}
+      {error && <h3 className="error">{error}</h3>}
+      {successMessage && <h3 className="success">{successMessage}</h3>}
       <div className="two-parts">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -130,17 +114,6 @@ const Form = () => {
             id="instituteId"
             name="instituteId"
             value={formData.instituteId}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="CGPA">CGPA:</label>
-          <input
-            type="text"
-            id="CGPA"
-            name="CGPA"
-            value={formData.CGPA}
             onChange={handleChange}
             required
           />
@@ -168,17 +141,6 @@ const Form = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="Department">Department:</label>
-          <input
-            type="text"
-            id="department"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
           <label htmlFor="semester">Semester:</label>
           <input
             type="number"
@@ -201,7 +163,7 @@ const Form = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="course">Course:</label>
+          <label htmlFor="course">Department:</label>
           <input
             type="text"
             id="course"
@@ -211,21 +173,19 @@ const Form = () => {
             required
           />
         </div>
+        <div className="form-group">
+          <label htmlFor="CGPA">CGPA:</label>
+          <input
+            type="text"
+            id="CGPA"
+            name="CGPA"
+            value={formData.CGPA}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <button type="submit">Submit Certificate Information</button>
       </form>
-      <hr></hr>
-      <div className="second-part" id="second-part">
-        {courses.map((course , index)=>{
-          return <div key={course.id} className="course-group">
-            <label>{course.name}</label>
-            <input></input>
-        </div>
-
-        })}
-        <button onClick={AddCourse}>Add course</button>
-        
-
-      </div>
       </div>
     </div>
   );

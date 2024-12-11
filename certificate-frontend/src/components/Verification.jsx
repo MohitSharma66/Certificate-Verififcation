@@ -48,7 +48,7 @@ const Verification = () => {
                    
         } else {
           setVerificationResult({
-            message: 'Certificate is invalid or not issued by an authorized institution.',
+            message: 'Certificate is invalid or not issued by an authorized institution and does not exist on the blockchain.',
             isValid,
           });
         }
@@ -87,7 +87,7 @@ const Verification = () => {
     className={`${verificationResult.isValid ? 'success' : 'failure'}`}
   >
     <h3>Verification Result:</h3>
-    <p>{verificationResult.message}</p>
+    <h3 style={{color: `${verificationResult.isValid ? 'green': 'red'}`, fontSize: `${verificationResult.isValid ? '1.1rem': '1.2rem'}`}}>{verificationResult.message}</h3>
   </div>
 )}
 
