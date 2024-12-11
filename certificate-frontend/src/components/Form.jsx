@@ -8,6 +8,7 @@ const Form = () => {
     instituteId: '',
     studentName: '',
     year: '',
+    departmenr:'',
     semester: '',
     studentUniqueId: '',
     course: '',
@@ -15,6 +16,13 @@ const Form = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const [courses , setCourses] = useState([{
+    id:1,
+    name:"Course 1:"
+  } , {
+    id:2,
+    name:"Course 2:"
+  }])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,11 +97,19 @@ const Form = () => {
     }
   };
 
+  const AddCourse = () =>{
+    setCourses([...courses , {
+      id: courses.length +1,
+      name: `Course ${courses.length +1}:`
+    }]);
+  }
+
   return (
     <div className="form-container">
       <h2>Certificate Issuance Form</h2>
       {error && <p className="error">{error}</p>}
       {successMessage && <p className="success">{successMessage}</p>}
+      <div className="two-parts">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="instituteName">Institute Name:</label>
@@ -151,6 +167,17 @@ const Form = () => {
           />
         </div>
         <div className="form-group">
+          <label htmlFor="Department">Department:</label>
+          <input
+            type="text"
+            id="department"
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
           <label htmlFor="semester">Semester:</label>
           <input
             type="number"
@@ -185,6 +212,20 @@ const Form = () => {
         </div>
         <button type="submit">Submit Certificate Information</button>
       </form>
+      <hr></hr>
+      <div className="second-part" id="second-part">
+        {courses.map((course , index)=>{
+          return <div key={course.id} className="course-group">
+            <label>{course.name}</label>
+            <input></input>
+        </div>
+
+        })}
+        <button onClick={AddCourse}>Add course</button>
+        
+
+      </div>
+      </div>
     </div>
   );
 };
