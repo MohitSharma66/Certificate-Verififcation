@@ -8,12 +8,12 @@ const Form = () => {
     instituteId: '',
     studentName: '',
     year: '',
-    departmenr:'',
+    department:'',
     semester: '',
     studentUniqueId: '',
     course: '',
     CGPA: '',
-  });
+  }); 
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
   const [courses , setCourses] = useState([{
@@ -85,6 +85,7 @@ const Form = () => {
         instituteName: '',
         instituteId: '',
         studentName: '',
+        department: '',
         year: '',
         semester: '',
         studentUniqueId: '',
