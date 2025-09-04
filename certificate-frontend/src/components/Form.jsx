@@ -53,7 +53,7 @@ const Form = () => {
 
     try {
       // First, store certificate data in backend database
-      const backendResponse = await fetch('http://localhost:3001/certificates', {
+      const backendResponse = await fetch('https://24f056ce-d7b5-4356-a5bc-7facbffef6db-00-34fv3ndqep366.sisko.replit.dev:3001/certificates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

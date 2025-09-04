@@ -1,8 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,33 +10,26 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Database file path
-const DB_FILE = path.join(__dirname, 'certificates.json');
+// MongoDB connection
+const MONGODB_URI = process.env.MONGODB_URI;
+let db;
 
-// Initialize database file if it doesn't exist
-if (!fs.existsSync(DB_FILE)) {
-  fs.writeFileSync(DB_FILE, JSON.stringify([]));
-}
-
-// Helper functions
-const readDatabase = () => {
+// Initialize MongoDB connection
+const connectToDatabase = async () => {
   try {
-    const data = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(data);
+    const client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    db = client.db('placementCellDB');
+    console.log('Connected to MongoDB successfully');
   } catch (error) {
-    console.error('Error reading database:', error);
-    return [];
+    console.error('Error connecting to MongoDB:', error);
+    process.exit(1);
   }
 };
 
-const writeDatabase = (data) => {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error writing database:', error);
-    return false;
-  }
+// Helper functions
+const getCertificatesCollection = () => {
+  return db.collection('certificates');
 };
 
 // Hash function for certificate ID + public key
@@ -53,13 +45,19 @@ app.get('/health', (req, res) => {
 });
 
 // Get all certificates (for admin purposes)
-app.get('/certificates', (req, res) => {
-  const certificates = readDatabase();
-  res.json(certificates);
+app.get('/certificates', async (req, res) => {
+  try {
+    const certificates = getCertificatesCollection();
+    const allCertificates = await certificates.find({}).toArray();
+    res.json(allCertificates);
+  } catch (error) {
+    console.error('Error fetching certificates:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Store certificate data
-app.post('/certificates', (req, res) => {
+app.post('/certificates', async (req, res) => {
   try {
     const {
       id,
@@ -80,10 +78,10 @@ app.post('/certificates', (req, res) => {
       });
     }
 
-    const certificates = readDatabase();
+    const certificates = getCertificatesCollection();
     
     // Check if certificate already exists
-    const existingCert = certificates.find(cert => cert.id === id);
+    const existingCert = await certificates.findOne({ id: id });
     if (existingCert) {
       return res.status(409).json({ error: 'Certificate with this ID already exists' });
     }
@@ -106,9 +104,10 @@ app.post('/certificates', (req, res) => {
     // Generate hash for blockchain storage
     const certificateHash = hashCertificateId(id, publicKey);
 
-    certificates.push(certificate);
+    // Insert into MongoDB
+    const result = await certificates.insertOne(certificate);
     
-    if (writeDatabase(certificates)) {
+    if (result.insertedId) {
       res.status(201).json({
         message: 'Certificate stored successfully',
         certificateHash, // This hash should be stored on blockchain
@@ -129,7 +128,7 @@ app.post('/certificates', (req, res) => {
 });
 
 // Verify certificate
-app.post('/verify', (req, res) => {
+app.post('/verify', async (req, res) => {
   try {
     const { certificateId, publicKey } = req.body;
 
@@ -139,12 +138,13 @@ app.post('/verify', (req, res) => {
       });
     }
 
-    const certificates = readDatabase();
+    const certificates = getCertificatesCollection();
     
     // Find certificate by ID and public key
-    const certificate = certificates.find(cert => 
-      cert.id === certificateId && cert.publicKey === publicKey
-    );
+    const certificate = await certificates.findOne({ 
+      id: certificateId, 
+      publicKey: publicKey 
+    });
 
     if (!certificate) {
       return res.status(404).json({ 
@@ -196,8 +196,13 @@ app.get('/hash/:certificateId/:publicKey', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Certificate Backend API running on http://0.0.0.0:${PORT}`);
-});
+const startServer = async () => {
+  await connectToDatabase();
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Certificate Backend API running on http://0.0.0.0:${PORT}`);
+  });
+};
+
+startServer().catch(console.error);
 
 module.exports = app;

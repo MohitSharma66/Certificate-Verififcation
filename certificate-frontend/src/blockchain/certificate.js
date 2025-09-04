@@ -1,8 +1,8 @@
 import Web3 from 'web3';
 import CertificateRegistry from '../../../build/contracts/CertificateRegistry.json';
 
-// Explicitly set Ganache as the provider
-const web3 = new Web3("http://127.0.0.1:7545"); // Replace window.ethereum with Ganache's RPC URL
+// Connect to Sepolia testnet via Alchemy
+const web3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/tnJsJ2NM8IO88aZvhZHaU`);
 
 const getContractInstance = async () => {
     try {

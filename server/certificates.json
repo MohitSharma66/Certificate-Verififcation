@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "1234567890",
+    "studentName": "Mohit Sharma",
+    "courseName": "DSAI",
+    "institution": "IIIT Naya Raipur",
+    "instituteId": 20,
+    "year": 2025,
+    "semester": 5,
+    "CGPA": "8.1",
+    "publicKey": "PublicKey001",
+    "createdAt": "2025-09-04T22:42:07.865Z",
+    "isValid": true
+  }
+]

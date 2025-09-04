@@ -42,9 +42,7 @@
  */
 
 // require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
-
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   /**
@@ -70,6 +68,14 @@ module.exports = {
       network_id: "5777",
       gas: 6721975,
       gasPrice: 20000000000   // Any network (default: none)
+     },
+     sepolia: {
+      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`),
+      network_id: 11155111,
+      gas: 5500000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
      },
     //
     // An additional network, but with some advanced options…
