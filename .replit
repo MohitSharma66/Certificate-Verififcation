@@ -49,6 +49,14 @@ waitForPort = 3001
 localPort = 3001
 externalPort = 3001
 
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 5001
+externalPort = 80
+
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "cd certificate-frontend && npm run preview -- --port 5000 --host 0.0.0.0"]
