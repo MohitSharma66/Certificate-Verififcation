@@ -11,7 +11,7 @@ const getContractInstance = async () => {
   
       const deployedNetwork = CertificateRegistry.networks[networkId];
       if (!deployedNetwork) {
-        console.error("Contract not deployed on this network.");
+        console.error("CertificateRegistry not deployed on this network.");
         return null;
       }
   
@@ -29,7 +29,7 @@ const getContractInstance = async () => {
     }
   };  
 
-export const issueCertificate = async (id, studentName, courseName, institution, instituteId, year, semester, CGPA) => {
+export const issueCertificate = async (certificateHash, instituteName) => {
     const contract = await getContractInstance();
     if (!contract) {
         console.error("Failed to load contract instance.");
@@ -43,14 +43,8 @@ export const issueCertificate = async (id, studentName, courseName, institution,
         
         return contract.methods
             .issueCertificate(
-                id,               // uint256 _id
-                studentName,      // string memory _studentName
-                courseName,       // string memory _courseName
-                institution,      // string memory _institution
-                instituteId,      // uint256 _instituteId
-                year,             // uint256 _year
-                semester,         // uint256 _semester
-                CGPA              // string memory _CGPA
+                certificateHash,  // string memory _certificateHash
+                instituteName     // string memory _instituteName
             )
             .send({ 
                 from: accounts[0], 
@@ -62,7 +56,7 @@ export const issueCertificate = async (id, studentName, courseName, institution,
     }
 };
 
-export const verifyCertificate = async (id) => {
+export const verifyCertificate = async (certificateHash) => {
     console.log("Inside verifyCertificate function"); // Check if the function is being invoked
     
     const contract = await getContractInstance();
@@ -73,22 +67,54 @@ export const verifyCertificate = async (id) => {
     }
     
     try {
-      console.log("Calling verifyCertificate with ID:", id); // Log the certificate ID
+      console.log("Calling verifyCertificate with hash:", certificateHash); // Log the certificate hash
       
-      // Call the contract method
-      const result = await contract.methods.verifyCertificate(id).call();
+      // Call the contract method with the hash
+      const result = await contract.methods.verifyCertificate(certificateHash).call();
       console.log("Verification Result:", result); // Log the result returned by the contract
       
       // Return the result
-      return result; // This should return [isValid, studentName, institution, id]
+      return result; // This should return [isValid, instituteName, timestamp]
       
     } catch (error) {
       console.error("Error verifying certificate:", error); // Log detailed error
       throw error; // Propagate the error for further handling
     }
   };
-  
-  
 
-  
+// Check if a certificate hash exists on the blockchain
+export const certificateExists = async (certificateHash) => {
+    const contract = await getContractInstance();
+    
+    if (!contract) {
+      console.error("Failed to load contract instance.");
+      return false;
+    }
+    
+    try {
+      // For the existing contract, we'll check if the certificate exists by trying to get it
+      const result = await contract.methods.certificates(certificateHash).call();
+      return result && result.id && result.id !== '0';
+    } catch (error) {
+      console.error("Error checking certificate existence:", error);
+      return false;
+    }
+  };
 
+// Get certificate details from blockchain (adapted for existing contract)
+export const getCertificateDetails = async (certificateId) => {
+    const contract = await getContractInstance();
+    
+    if (!contract) {
+      console.error("Failed to load contract instance.");
+      return null;
+    }
+    
+    try {
+      const result = await contract.methods.certificates(certificateId).call();
+      return result; // Returns certificate struct from existing contract
+    } catch (error) {
+      console.error("Error getting certificate details:", error);
+      throw error;
+    }
+  };

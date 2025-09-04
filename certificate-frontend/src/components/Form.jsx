@@ -12,6 +12,7 @@ const Form = () => {
     studentUniqueId: '',
     course: '',
     CGPA: '',
+    publicKey: '',
   }); 
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +27,7 @@ const Form = () => {
     setError('');
     setSuccessMessage('');
 
-    const { instituteName, studentName, year, semester, studentUniqueId, instituteId, CGPA } = formData;
+    const { instituteName, studentName, year, semester, studentUniqueId, instituteId, CGPA, publicKey } = formData;
 
     // Validate fields
     if (!/^[a-zA-Z\s]+$/.test(instituteName)) {
@@ -45,32 +46,46 @@ const Form = () => {
       setError('CGPA must be a valid decimal number.');
       return;
     }
+    if (!publicKey.trim()) {
+      setError('Public Key is required.');
+      return;
+    }
 
     try {
-      console.log({
-        studentUniqueId: formData.studentUniqueId,
-        studentName: formData.studentName,
-        course: formData.course,
-        instituteName: formData.instituteName,
-        instituteId: formData.instituteId,
-        year: formData.year,
-        semester: formData.semester,
-        CGPA: formData.CGPA
+      // First, store certificate data in backend database
+      const backendResponse = await fetch('http://localhost:3001/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: formData.studentUniqueId,
+          studentName: formData.studentName,
+          courseName: formData.course,
+          institution: formData.instituteName,
+          instituteId: parseInt(formData.instituteId),
+          year: parseInt(formData.year),
+          semester: parseInt(formData.semester),
+          CGPA: formData.CGPA,
+          publicKey: formData.publicKey
+        })
       });
-      
-      // Call the issueCertificate function from blockchain
+
+      if (!backendResponse.ok) {
+        const errorData = await backendResponse.json();
+        throw new Error(errorData.error || 'Failed to store certificate data');
+      }
+
+      const backendData = await backendResponse.json();
+      console.log('Certificate stored in database:', backendData);
+
+      // Then store the hash on blockchain using the updated contract
       await issueCertificate(
-        parseInt(formData.studentUniqueId),    // uint256 _id
-        formData.studentName,                  // string memory _studentName
-        formData.course,                       // string memory _courseName
-        formData.instituteName,                // string memory _institution
-        parseInt(formData.instituteId),        // uint256 _instituteId
-        parseInt(formData.year),               // uint256 _year
-        parseInt(formData.semester),           // uint256 _semester
-        formData.CGPA                          // string memory _CGPA
+        backendData.certificateHash,  // The hash from backend
+        formData.instituteName        // Institute name
       );         
 
-      setSuccessMessage('Certificate information submitted successfully!');
+      setSuccessMessage(`Certificate issued successfully! Certificate Hash: ${backendData.certificateHash}`);
 
       // Reset form after successful submission
       setFormData({
@@ -81,7 +96,8 @@ const Form = () => {
         semester: '',
         studentUniqueId: '',
         course: '',
-        CGPA: ''
+        CGPA: '',
+        publicKey: ''
       });
     } catch (err) {
       setError(`Failed to submit certificate information. Error: ${err.message || err}`);
@@ -181,6 +197,18 @@ const Form = () => {
             name="CGPA"
             value={formData.CGPA}
             onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="publicKey">Institute Public Key:</label>
+          <input
+            type="text"
+            id="publicKey"
+            name="publicKey"
+            value={formData.publicKey}
+            onChange={handleChange}
+            placeholder="Enter institute's public key for verification"
             required
           />
         </div>

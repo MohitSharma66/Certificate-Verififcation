@@ -4,6 +4,7 @@ import './Verification.css'; // Optional: For styling
 
 const Verification = () => {
   const [certificateId, setCertificateId] = useState('');
+  const [publicKey, setPublicKey] = useState('');
   const [verificationResult, setVerificationResult] = useState(null); // Holds verification details
   const [error, setError] = useState('');
 
@@ -12,59 +13,84 @@ const Verification = () => {
     setError('');
     setVerificationResult(null); // Reset verification result
     
-    console.log("Handling certificate verification"); // Check if function is being called
+    if (!certificateId.trim() || !publicKey.trim()) {
+      setError('Please provide both Certificate ID and Public Key');
+      return;
+    }
+    
+    console.log("Handling certificate verification with new flow");
     
     try {
-      console.log("Submitting Certificate ID for verification:", certificateId); // Log the ID being submitted
+      // Step 1: Verify with backend API and get certificate details
+      console.log("Step 1: Verifying with backend API");
+      const backendResponse = await fetch('http://localhost:3001/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          certificateId: certificateId,
+          publicKey: publicKey
+        })
+      });
+
+      if (!backendResponse.ok) {
+        const errorData = await backendResponse.json();
+        throw new Error(errorData.error || 'Certificate not found in database');
+      }
+
+      const backendData = await backendResponse.json();
+      console.log("Backend verification successful:", backendData);
+
+      // Step 2: Verify the hash exists on blockchain
+      console.log("Step 2: Verifying hash on blockchain");
+      const blockchainResponse = await verifyCertificate(backendData.certificateHash);
+      console.log("Blockchain verification response:", blockchainResponse);
       
-      const id = parseInt(certificateId); // Ensure the certificate ID is an integer
-      console.log("Parsed Certificate ID:", id); // Log the parsed ID
-      
-      // Call verifyCertificate from blockchain
-      const response = await verifyCertificate(id);
-      console.log("Verification Response:", response); // Log the full response from the contract
-  
-      if (response) {
-        // Access properties of the response object directly
-        const isValid = response[0];  // Boolean value for validity
-        const studentName = response[1];  // Student's name
-        const institution = response[2];  // Institution name
-        const certificateId = response[3];  // Certificate ID
-  
-        console.log("isValid:", isValid, "studentName:", studentName, "institution:", institution, "certificateId:", certificateId); // Log the extracted data
-  
+      if (blockchainResponse) {
+        const [isValid, instituteName, timestamp] = blockchainResponse;
+        
         if (isValid) {
           setVerificationResult({
             message: (
-              <pre>
-                {`Certificate is valid and issued under:
-  Student: ${studentName}
-  Institution: ${institution}
-  Certificate ID: ${certificateId}.`}
-              </pre>
+              <div>
+                <h4>✅ Certificate Verified Successfully!</h4>
+                <div style={{ textAlign: 'left', marginTop: '15px' }}>
+                  <p><strong>Student Name:</strong> {backendData.certificate.studentName}</p>
+                  <p><strong>Course:</strong> {backendData.certificate.courseName}</p>
+                  <p><strong>Institution:</strong> {backendData.certificate.institution}</p>
+                  <p><strong>Year:</strong> {backendData.certificate.year}</p>
+                  <p><strong>Semester:</strong> {backendData.certificate.semester}</p>
+                  <p><strong>CGPA:</strong> {backendData.certificate.CGPA}</p>
+                  <p><strong>Institute ID:</strong> {backendData.certificate.instituteId}</p>
+                  <p><strong>Certificate ID:</strong> {backendData.certificate.id}</p>
+                  <p><strong>Issued On:</strong> {new Date(backendData.certificate.createdAt).toLocaleDateString()}</p>
+                  <p><strong>Blockchain Timestamp:</strong> {new Date(parseInt(timestamp) * 1000).toLocaleDateString()}</p>
+                  <p><strong>Certificate Hash:</strong> <code>{backendData.certificateHash}</code></p>
+                </div>
+              </div>
             ),
-            isValid,
+            isValid: true,
           });
-                   
         } else {
           setVerificationResult({
-            message: 'Certificate is invalid or not issued by an authorized institution and does not exist on the blockchain.',
-            isValid,
+            message: 'Certificate hash found in database but not verified on blockchain. This may indicate tampering.',
+            isValid: false,
           });
         }
       } else {
-        setError("No certificate data returned");
+        setError("Certificate exists in database but hash not found on blockchain");
       }
     } catch (err) {
       console.error("Verification failed:", err);
-      setError('Verification failed. Please try again.');
+      setError(`Verification failed: ${err.message}`);
     }
   };  
 
   return (
     <div className="verification-container">
       <h2>Certificate Verification</h2>
-      <p>Enter the certificate ID to verify its authenticity.</p>
+      <p>Enter the certificate ID and public key to verify authenticity using blockchain technology.</p>
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleVerification}>
         <div className="form-group">
@@ -76,6 +102,20 @@ const Verification = () => {
             id="certificateId"
             value={certificateId}
             onChange={(e) => setCertificateId(e.target.value)}
+            placeholder="Enter certificate unique ID"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="publicKey" style={{ marginLeft: '10px' }}>
+            Institute Public Key:
+          </label>
+          <input
+            type="text"
+            id="publicKey"
+            value={publicKey}
+            onChange={(e) => setPublicKey(e.target.value)}
+            placeholder="Enter institute's public key"
             required
           />
         </div>
