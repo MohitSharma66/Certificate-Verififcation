@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-const { MongoClient } = require('mongodb');
+const { Client } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,26 +10,51 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI;
+// PostgreSQL connection
 let db;
 
-// Initialize MongoDB connection
+// Initialize PostgreSQL connection
 const connectToDatabase = async () => {
   try {
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    db = client.db('placementCellDB');
-    console.log('Connected to MongoDB successfully');
+    db = new Client({
+      connectionString: process.env.DATABASE_URL,
+    });
+    await db.connect();
+    console.log('Connected to PostgreSQL successfully');
+    
+    // Create certificates table if it doesn't exist
+    await initializeDatabase();
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.error('Error connecting to PostgreSQL:', error);
     process.exit(1);
   }
 };
 
-// Helper functions
-const getCertificatesCollection = () => {
-  return db.collection('certificates');
+// Initialize database schema
+const initializeDatabase = async () => {
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS certificates (
+      id VARCHAR(255) PRIMARY KEY,
+      student_name VARCHAR(255) NOT NULL,
+      course_name VARCHAR(255) NOT NULL,
+      institution VARCHAR(255) NOT NULL,
+      institute_id VARCHAR(255),
+      year INTEGER,
+      semester VARCHAR(50),
+      cgpa DECIMAL(4,2),
+      public_key TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      is_valid BOOLEAN DEFAULT true
+    );
+  `;
+  
+  try {
+    await db.query(createTableQuery);
+    console.log('Database schema initialized successfully');
+  } catch (error) {
+    console.error('Error creating database schema:', error);
+    throw error;
+  }
 };
 
 // Hash function for certificate ID + public key
@@ -47,9 +72,8 @@ app.get('/health', (req, res) => {
 // Get all certificates (for admin purposes)
 app.get('/certificates', async (req, res) => {
   try {
-    const certificates = getCertificatesCollection();
-    const allCertificates = await certificates.find({}).toArray();
-    res.json(allCertificates);
+    const result = await db.query('SELECT * FROM certificates ORDER BY created_at DESC');
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching certificates:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -77,45 +101,37 @@ app.post('/certificates', async (req, res) => {
         error: 'Missing required fields: id, studentName, courseName, institution, publicKey' 
       });
     }
-
-    const certificates = getCertificatesCollection();
     
     // Check if certificate already exists
-    const existingCert = await certificates.findOne({ id: id });
-    if (existingCert) {
+    const existingCert = await db.query('SELECT id FROM certificates WHERE id = $1', [id]);
+    if (existingCert.rows.length > 0) {
       return res.status(409).json({ error: 'Certificate with this ID already exists' });
     }
-
-    // Create certificate object
-    const certificate = {
-      id,
-      studentName,
-      courseName,
-      institution,
-      instituteId,
-      year,
-      semester,
-      CGPA,
-      publicKey,
-      createdAt: new Date().toISOString(),
-      isValid: true
-    };
 
     // Generate hash for blockchain storage
     const certificateHash = hashCertificateId(id, publicKey);
 
-    // Insert into MongoDB
-    const result = await certificates.insertOne(certificate);
+    // Insert into PostgreSQL
+    const insertQuery = `
+      INSERT INTO certificates (id, student_name, course_name, institution, institute_id, year, semester, cgpa, public_key)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING id, student_name, institution, created_at
+    `;
     
-    if (result.insertedId) {
+    const result = await db.query(insertQuery, [
+      id, studentName, courseName, institution, instituteId, year, semester, CGPA, publicKey
+    ]);
+    
+    if (result.rows.length > 0) {
+      const insertedCert = result.rows[0];
       res.status(201).json({
         message: 'Certificate stored successfully',
         certificateHash, // This hash should be stored on blockchain
         certificate: {
-          id,
-          studentName,
-          institution,
-          createdAt: certificate.createdAt
+          id: insertedCert.id,
+          studentName: insertedCert.student_name,
+          institution: insertedCert.institution,
+          createdAt: insertedCert.created_at
         }
       });
     } else {
@@ -137,22 +153,22 @@ app.post('/verify', async (req, res) => {
         error: 'Missing required fields: certificateId, publicKey' 
       });
     }
-
-    const certificates = getCertificatesCollection();
     
     // Find certificate by ID and public key
-    const certificate = await certificates.findOne({ 
-      id: certificateId, 
-      publicKey: publicKey 
-    });
+    const result = await db.query(
+      'SELECT * FROM certificates WHERE id = $1 AND public_key = $2',
+      [certificateId, publicKey]
+    );
 
-    if (!certificate) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ 
         error: 'Certificate not found or invalid public key' 
       });
     }
 
-    if (!certificate.isValid) {
+    const certificate = result.rows[0];
+
+    if (!certificate.is_valid) {
       return res.status(400).json({ 
         error: 'Certificate has been revoked' 
       });
@@ -167,14 +183,14 @@ app.post('/verify', async (req, res) => {
       certificateHash, // This should match the hash stored on blockchain
       certificate: {
         id: certificate.id,
-        studentName: certificate.studentName,
-        courseName: certificate.courseName,
+        studentName: certificate.student_name,
+        courseName: certificate.course_name,
         institution: certificate.institution,
-        instituteId: certificate.instituteId,
+        instituteId: certificate.institute_id,
         year: certificate.year,
         semester: certificate.semester,
-        CGPA: certificate.CGPA,
-        createdAt: certificate.createdAt
+        CGPA: certificate.cgpa,
+        createdAt: certificate.created_at
       }
     });
   } catch (error) {
@@ -198,8 +214,8 @@ app.get('/hash/:certificateId/:publicKey', (req, res) => {
 // Start server
 const startServer = async () => {
   await connectToDatabase();
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Certificate Backend API running on http://0.0.0.0:${PORT}`);
+  app.listen(PORT, 'localhost', () => {
+    console.log(`Certificate Backend API running on http://localhost:${PORT}`);
   });
 };
 
