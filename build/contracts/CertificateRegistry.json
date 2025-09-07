@@ -63,7 +63,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -76,7 +77,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -158,7 +160,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"certificates\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"studentName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"courseName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"institution\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"instituteId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"year\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"semester\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"CGPA\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isValid\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_studentName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_courseName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_institution\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_instituteId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_year\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_semester\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_CGPA\",\"type\":\"string\"}],\"name\":\"issueCertificate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"verifyCertificate\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/CertificateRegistry.sol\":\"CertificateRegistry\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/CertificateRegistry.sol\":{\"keccak256\":\"0xad125671db2c29e0033bf541de3e6c560f94ed4d31c838d37565a63cfcf0657a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f7f8a647dc679850d538c7ae2440f262e1f191049f5ff82de42f78a66b2f4e0\",\"dweb:/ipfs/QmNwDYcVELqDfWcQKWFWHnjFymi6zphaP2NijHoDKUCqAW\"]}},\"version\":1}",
@@ -7037,10 +7040,17 @@
       "links": {},
       "address": "0x52de3d13dbEE7CF7c4bdE688181636EE86AE7f17",
       "transactionHash": "0xe8cfb40d7f137b97ec0c691c3400fd791ddd0ed1a0c65073653181b07123a13a"
+    },
+    "11155111": {
+      "events": {},
+      "links": {},
+      "address": "0x0Ff62165f23B55A66c43163f5011FF4C9def3d13",
+      "transactionHash": "0x0a0e1310f6303d679a7d965925b1a5c99d18d6087275858fb40a49a5ea80d009"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-09-07T10:08:20.253Z",
+  "updatedAt": "2025-09-07T10:18:38.283Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

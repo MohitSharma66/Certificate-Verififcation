@@ -37,5 +37,18 @@
     "publicKey": "PublicKey001",
     "createdAt": "2025-09-07T10:10:08.556Z",
     "isValid": true
+  },
+  {
+    "id": "test123",
+    "studentName": "Test Student",
+    "courseName": "Computer Science",
+    "institution": "Test University",
+    "instituteId": "456",
+    "year": "2024",
+    "semester": "1",
+    "CGPA": "8.5",
+    "publicKey": "0x1234567890abcdef",
+    "createdAt": "2025-09-07T10:19:33.764Z",
+    "isValid": true
   }
 ]
