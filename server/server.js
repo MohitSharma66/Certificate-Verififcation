@@ -17,19 +17,68 @@ let db;
 // Initialize MongoDB connection
 const connectToDatabase = async () => {
   try {
-    const client = new MongoClient(MONGODB_URI);
+    const client = new MongoClient(MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
+      tls: true,
+      tlsInsecure: true, // This allows insecure TLS connections
+      serverApi: { version: '1', strict: false, deprecationErrors: false }
+    });
     await client.connect();
+    // Test the connection
+    await client.db("admin").command({ ping: 1 });
     db = client.db('certificateDB');
     console.log('Connected to MongoDB successfully');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
-    process.exit(1);
+    
+    // Fallback to file-based storage if MongoDB fails
+    console.log('Falling back to file-based storage...');
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Create certificates.json if it doesn't exist
+    const certificatesPath = path.join(__dirname, 'certificates.json');
+    if (!fs.existsSync(certificatesPath)) {
+      fs.writeFileSync(certificatesPath, JSON.stringify([]), 'utf8');
+    }
+    
+    // Set db to null to indicate we're using file storage
+    db = null;
+    console.log('Using file-based storage in certificates.json');
   }
 };
 
 // Helper functions
+const fs = require('fs');
+const path = require('path');
+const certificatesPath = path.join(__dirname, 'certificates.json');
+
 const getCertificatesCollection = () => {
-  return db.collection('certificates');
+  if (db) {
+    return db.collection('certificates');
+  }
+  return null; // Using file storage
+};
+
+// File storage helper functions
+const readCertificatesFromFile = () => {
+  try {
+    const data = fs.readFileSync(certificatesPath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading certificates file:', error);
+    return [];
+  }
+};
+
+const writeCertificatesToFile = (certificates) => {
+  try {
+    fs.writeFileSync(certificatesPath, JSON.stringify(certificates, null, 2), 'utf8');
+  } catch (error) {
+    console.error('Error writing certificates file:', error);
+    throw error;
+  }
 };
 
 // Hash function for certificate ID + public key
@@ -47,8 +96,17 @@ app.get('/health', (req, res) => {
 // Get all certificates (for admin purposes)
 app.get('/certificates', async (req, res) => {
   try {
-    const certificates = getCertificatesCollection();
-    const allCertificates = await certificates.find({}).toArray();
+    let allCertificates;
+    
+    if (db) {
+      // MongoDB
+      const certificates = getCertificatesCollection();
+      allCertificates = await certificates.find({}).toArray();
+    } else {
+      // File storage
+      allCertificates = readCertificatesFromFile();
+    }
+    
     res.json(allCertificates);
   } catch (error) {
     console.error('Error fetching certificates:', error);
@@ -78,14 +136,6 @@ app.post('/certificates', async (req, res) => {
       });
     }
 
-    const certificates = getCertificatesCollection();
-    
-    // Check if certificate already exists
-    const existingCert = await certificates.findOne({ id: id });
-    if (existingCert) {
-      return res.status(409).json({ error: 'Certificate with this ID already exists' });
-    }
-
     // Create certificate object
     const certificate = {
       id,
@@ -104,10 +154,38 @@ app.post('/certificates', async (req, res) => {
     // Generate hash for blockchain storage
     const certificateHash = hashCertificateId(id, publicKey);
 
-    // Insert into MongoDB
-    const result = await certificates.insertOne(certificate);
+    let success = false;
+
+    if (db) {
+      // MongoDB storage
+      const certificates = getCertificatesCollection();
+      
+      // Check if certificate already exists
+      const existingCert = await certificates.findOne({ id: id });
+      if (existingCert) {
+        return res.status(409).json({ error: 'Certificate with this ID already exists' });
+      }
+
+      // Insert into MongoDB
+      const result = await certificates.insertOne(certificate);
+      success = result.insertedId;
+    } else {
+      // File storage
+      const certificates = readCertificatesFromFile();
+      
+      // Check if certificate already exists
+      const existingCert = certificates.find(cert => cert.id === id);
+      if (existingCert) {
+        return res.status(409).json({ error: 'Certificate with this ID already exists' });
+      }
+
+      // Add to file
+      certificates.push(certificate);
+      writeCertificatesToFile(certificates);
+      success = true;
+    }
     
-    if (result.insertedId) {
+    if (success) {
       res.status(201).json({
         message: 'Certificate stored successfully',
         certificateHash, // This hash should be stored on blockchain
@@ -138,13 +216,22 @@ app.post('/verify', async (req, res) => {
       });
     }
 
-    const certificates = getCertificatesCollection();
-    
-    // Find certificate by ID and public key
-    const certificate = await certificates.findOne({ 
-      id: certificateId, 
-      publicKey: publicKey 
-    });
+    let certificate;
+
+    if (db) {
+      // MongoDB storage
+      const certificates = getCertificatesCollection();
+      certificate = await certificates.findOne({ 
+        id: certificateId, 
+        publicKey: publicKey 
+      });
+    } else {
+      // File storage
+      const certificates = readCertificatesFromFile();
+      certificate = certificates.find(cert => 
+        cert.id === certificateId && cert.publicKey === publicKey
+      );
+    }
 
     if (!certificate) {
       return res.status(404).json({ 
