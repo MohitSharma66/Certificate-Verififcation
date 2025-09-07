@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import CertificateRegistry from '../../../build/contracts/CertificateRegistry.json';
+import SimpleCertificateRegistry from '../../../build/contracts/SimpleCertificateRegistry.json';
 
 // Connect to Sepolia testnet via Alchemy
 const web3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_API_KEY || 'tnJsJ2NM8IO88aZvhZHaU'}`);
@@ -9,16 +9,16 @@ const getContractInstance = async () => {
       const networkId = await web3.eth.net.getId();
       console.log("Network ID:", networkId); // Log network ID for debugging
   
-      const deployedNetwork = CertificateRegistry.networks[networkId];
+      const deployedNetwork = SimpleCertificateRegistry.networks[networkId];
       if (!deployedNetwork) {
-        console.error("CertificateRegistry not deployed on this network.");
+        console.error("SimpleCertificateRegistry not deployed on this network.");
         return null;
       }
   
       console.log("Deployed Contract Address:", deployedNetwork.address); // Log contract address
   
       const contract = new web3.eth.Contract(
-        CertificateRegistry.abi,
+        SimpleCertificateRegistry.abi,
         deployedNetwork.address
       );
   
@@ -39,19 +39,19 @@ export const issueCertificate = async (certificateHash, instituteName) => {
     try {
         const accounts = await web3.eth.getAccounts();
 
-        const gasLimit = 6721975;  // Set your custom gas limit here (adjust as needed)
+        const gasLimit = 300000;  // Much lower gas limit for simple hash storage
         
         return contract.methods
-            .issueCertificate(
-                certificateHash,  // string memory _certificateHash
-                instituteName     // string memory _instituteName
+            .storeHash(
+                certificateHash,  // string memory _hash
+                instituteName     // string memory _institution
             )
             .send({ 
                 from: accounts[0], 
-                gas: gasLimit  // Add gas limit here
+                gas: gasLimit
             });
     } catch (error) {
-        console.error("Error issuing certificate:", error);
+        console.error("Error storing certificate hash:", error);
         throw error;
     }
 };
@@ -67,14 +67,14 @@ export const verifyCertificate = async (certificateHash) => {
     }
     
     try {
-      console.log("Calling verifyCertificate with hash:", certificateHash); // Log the certificate hash
+      console.log("Calling verifyHash with hash:", certificateHash); // Log the certificate hash
       
-      // Call the contract method with the hash
-      const result = await contract.methods.verifyCertificate(certificateHash).call();
+      // Call the simplified contract method with the hash
+      const result = await contract.methods.verifyHash(certificateHash).call();
       console.log("Verification Result:", result); // Log the result returned by the contract
       
-      // Return the result
-      return result; // This should return [isValid, instituteName, timestamp]
+      // Return the result: [exists, institution, timestamp]
+      return result;
       
     } catch (error) {
       console.error("Error verifying certificate:", error); // Log detailed error
