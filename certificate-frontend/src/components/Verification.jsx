@@ -23,7 +23,7 @@ const Verification = () => {
     try {
       // Step 1: Verify with backend API and get certificate details
       console.log("Step 1: Verifying with backend API");
-      const backendResponse = await fetch('https://24f056ce-d7b5-4356-a5bc-7facbffef6db-00-34fv3ndqep366.sisko.replit.dev:3001/verify', {
+      const backendResponse = await fetch('https://31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev:3001/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
