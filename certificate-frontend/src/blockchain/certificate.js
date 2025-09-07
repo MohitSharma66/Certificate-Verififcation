@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import CertificateRegistry from '../../../build/contracts/CertificateRegistry.json';
 
 // Connect to Sepolia testnet via Alchemy
-const web3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/tnJsJ2NM8IO88aZvhZHaU`);
+const web3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_API_KEY || 'tnJsJ2NM8IO88aZvhZHaU'}`);
 
 const getContractInstance = async () => {
     try {
