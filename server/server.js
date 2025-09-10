@@ -6,12 +6,30 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+// Middleware - CORS configuration for production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.FRONTEND_URL].filter(Boolean) // Only allow specific frontend URL in production
+    : [
+        'http://localhost:3000', // Development frontend
+        'http://localhost:5173', // Vite dev server
+        process.env.FRONTEND_URL
+      ].filter(Boolean),
+  credentials: false, // Not using cookies, so disable credentials
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// MongoDB connection
-const MONGODB_URI = 'mongodb+srv://TheFirstUser:FirstPassword@cluster0.jtka6ih.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB connection - Use environment variable for security
+const MONGODB_URI = process.env.MONGODB_URI;
+
+// Require MongoDB URI in production
+if (process.env.NODE_ENV === 'production' && !MONGODB_URI) {
+  console.error('MONGODB_URI environment variable is required in production');
+  process.exit(1);
+}
 let db;
 
 // Initialize MongoDB connection
@@ -21,7 +39,6 @@ const connectToDatabase = async () => {
       serverSelectionTimeoutMS: 30000,
       connectTimeoutMS: 30000,
       tls: true,
-      tlsInsecure: true, // This allows insecure TLS connections
       serverApi: { version: '1', strict: false, deprecationErrors: false }
     });
     await client.connect();
@@ -32,8 +49,13 @@ const connectToDatabase = async () => {
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
     
-    // Fallback to file-based storage if MongoDB fails
-    console.log('Falling back to file-based storage...');
+    // Fallback to file-based storage only in development
+    if (process.env.NODE_ENV === 'production') {
+      console.error('MongoDB connection failed in production. Exiting.');
+      process.exit(1);
+    }
+    
+    console.log('Development mode: Falling back to file-based storage...');
     const fs = require('fs');
     const path = require('path');
     
@@ -285,8 +307,9 @@ app.get('/hash/:certificateId/:publicKey', (req, res) => {
 // Start server
 const startServer = async () => {
   await connectToDatabase();
-  app.listen(PORT, 'localhost', () => {
-    console.log(`Certificate Backend API running on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Certificate Backend API running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 };
 

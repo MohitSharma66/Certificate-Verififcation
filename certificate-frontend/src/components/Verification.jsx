@@ -45,7 +45,11 @@ const Verification = () => {
     
     // Step 1: Verify with backend API and get certificate details
     console.log("Step 1: Verifying with backend API");
-    const backendResponse = await fetch('https://31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev:3001/verify', {
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    if (!apiBaseUrl) {
+      throw new Error('API base URL not configured. Please set VITE_API_BASE_URL environment variable.');
+    }
+    const backendResponse = await fetch(`${apiBaseUrl}/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

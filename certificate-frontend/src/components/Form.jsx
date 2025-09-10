@@ -58,7 +58,11 @@ const Form = () => {
 
     try {
       // First, store certificate data in backend database
-      const backendResponse = await fetch('https://31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev:3001/certificates', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+      if (!apiBaseUrl) {
+        throw new Error('API base URL not configured. Please set VITE_API_BASE_URL environment variable.');
+      }
+      const backendResponse = await fetch(`${apiBaseUrl}/certificates`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,9 +94,12 @@ const Form = () => {
         formData.instituteName        // Institute name
       );         
 
-      // Generate verification URL with certificate ID and public key using Replit's public domain
-      const publicDomain = import.meta.env.VITE_REPLIT_DOMAINS || '31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev';
-      const verifyUrl = `https://${publicDomain}/verify?id=${formData.studentUniqueId}&key=${encodeURIComponent(formData.publicKey)}`;
+      // Generate verification URL with certificate ID and public key
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      if (!baseUrl) {
+        throw new Error('Base URL not configured. Please set VITE_BASE_URL environment variable.');
+      }
+      const verifyUrl = `${baseUrl}/verify?id=${formData.studentUniqueId}&key=${encodeURIComponent(formData.publicKey)}`;
       setVerificationUrl(verifyUrl);
 
       // Generate QR code for the verification URL
