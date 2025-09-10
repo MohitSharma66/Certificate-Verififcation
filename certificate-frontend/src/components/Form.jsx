@@ -91,7 +91,7 @@ const Form = () => {
       );         
 
       // Generate verification URL with certificate ID and public key using Replit's public domain
-      const publicDomain = import.meta.env.VITE_REPLIT_DOMAINS || process.env.REPLIT_DOMAINS || '31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev';
+      const publicDomain = import.meta.env.VITE_REPLIT_DOMAINS || '31d857fa-1f00-4133-9edd-7f2a2c228887-00-215xdj2qeu8ir.kirk.replit.dev';
       const verifyUrl = `https://${publicDomain}/verify?id=${formData.studentUniqueId}&key=${encodeURIComponent(formData.publicKey)}`;
       setVerificationUrl(verifyUrl);
 
