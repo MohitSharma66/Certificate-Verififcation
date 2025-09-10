@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { issueCertificate } from '../blockchain/certificate'; // Import from certificate.js
+import QRCode from 'qrcode';
 import './Form.css'; // Optional: For styling
 
 const Form = () => {
@@ -16,6 +17,8 @@ const Form = () => {
   }); 
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [verificationUrl, setVerificationUrl] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +29,8 @@ const Form = () => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
+    setQrCodeUrl('');
+    setVerificationUrl('');
 
     const { instituteName, studentName, year, semester, studentUniqueId, instituteId, CGPA, publicKey } = formData;
 
@@ -85,6 +90,26 @@ const Form = () => {
         formData.instituteName        // Institute name
       );         
 
+      // Generate verification URL with certificate ID and public key
+      const currentUrl = window.location.origin;
+      const verifyUrl = `${currentUrl}/verify?id=${formData.studentUniqueId}&key=${encodeURIComponent(formData.publicKey)}`;
+      setVerificationUrl(verifyUrl);
+
+      // Generate QR code for the verification URL
+      try {
+        const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        setQrCodeUrl(qrDataUrl);
+      } catch (qrError) {
+        console.error('Error generating QR code:', qrError);
+      }
+
       setSuccessMessage(`Certificate issued successfully! Certificate Hash: ${backendData.certificateHash}`);
 
       // Reset form after successful submission
@@ -109,7 +134,28 @@ const Form = () => {
     <div className="form-container">
       <h2>Certificate Issuance Form</h2>
       {error && <h3 className="error">{error}</h3>}
-      {successMessage && <h3 className="success">{successMessage}</h3>}
+      {successMessage && (
+        <div className="success">
+          <h3>{successMessage}</h3>
+          {qrCodeUrl && (
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <h4>📱 QR Code for Certificate Verification</h4>
+              <div style={{ background: 'white', padding: '15px', display: 'inline-block', borderRadius: '8px' }}>
+                <img src={qrCodeUrl} alt="QR Code for Certificate Verification" style={{ display: 'block' }} />
+              </div>
+              <p style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+                Scan this QR code to automatically verify the certificate
+              </p>
+              <div style={{ marginTop: '15px', padding: '10px', background: '#f0f0f0', borderRadius: '5px' }}>
+                <strong>Verification URL:</strong><br />
+                <a href={verificationUrl} target="_blank" rel="noopener noreferrer" style={{ wordBreak: 'break-all', fontSize: '12px' }}>
+                  {verificationUrl}
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div className="two-parts">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
