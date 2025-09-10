@@ -48,7 +48,20 @@ const Verification = () => {
       console.log("Blockchain verification response:", blockchainResponse);
       
       if (blockchainResponse) {
-        const [isValid, instituteName, timestamp] = blockchainResponse;
+        // Handle different response formats
+        let isValid, instituteName, timestamp;
+        
+        if (Array.isArray(blockchainResponse)) {
+          // If it's an array (tuple response)
+          [isValid, instituteName, timestamp] = blockchainResponse;
+        } else if (typeof blockchainResponse === 'object') {
+          // If it's an object
+          isValid = blockchainResponse[0] || blockchainResponse.exists;
+          instituteName = blockchainResponse[1] || blockchainResponse.institution;
+          timestamp = blockchainResponse[2] || blockchainResponse.timestamp;
+        }
+        
+        console.log("Parsed blockchain data:", { isValid, instituteName, timestamp });
         
         if (isValid) {
           setVerificationResult({
