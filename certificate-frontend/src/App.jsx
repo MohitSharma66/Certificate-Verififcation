@@ -27,6 +27,7 @@ function App() {
             }
           />
           <Route path="/verification" element={<Verification />} />
+          <Route path="/verify" element={<Verification />} />
         </Routes>
       </Router>
     </AuthProvider>
