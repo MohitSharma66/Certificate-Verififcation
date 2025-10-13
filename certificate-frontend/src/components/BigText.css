@@ -1,26 +1,69 @@
 .hero-text {
-    text-align: center;
-    padding: 60px 20px;
-    font-family: 'Poppins', sans-serif;
-    border: none;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-text .highlight {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: normal;
+  position: relative;
+}
+
+.hero-text .sub-text {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-light);
+  margin-top: 1rem;
+  line-height: 1.8;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-text h1 {
+  animation: slideUp 0.8s ease-out;
+}
+
+.hero-text .sub-text {
+  animation: slideUp 0.8s ease-out 0.2s backwards;
+}
+
+@media (max-width: 768px) {
+  .hero-text {
+    padding: 2rem 1rem;
+  }
+
   .hero-text h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #333;
-    line-height: 1.2;
+    font-size: 2.25rem;
   }
-  
-  .hero-text .highlight {
-    color: #28a745;
-    font-style: italic;
-  }
-  
+
   .hero-text .sub-text {
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: #555;
-    margin-top: 15px;
+    font-size: 1rem;
   }
-  
+}
