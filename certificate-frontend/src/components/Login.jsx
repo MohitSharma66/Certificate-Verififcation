@@ -34,21 +34,20 @@ const Login = () => {
   }
 
   return (
-    <>
-    <BigText/>
-    <div style={{display: 'flex'}}>
-      <div className="login-container">
-        <h2>Institute Login</h2>
-        {error && <p className="error">{error}</p>}
-        <button id="login_btn" onClick={handleLogin}>Login with MetaMask</button>
-      </div>
-      <div className="login-container">
-        <h2>Verification Page</h2>
-        {error && <p className="error">{error}</p>}
-        <button id="login_btn" onClick={handleVerification}>Go to Verification Page</button>
+    <div className="login-page-container">
+      <BigText/>
+      <div className="cards-wrapper">
+        <div className="login-container">
+          <h2>Institute Login</h2>
+          {error && <p className="error">{error}</p>}
+          <button id="login_btn" onClick={handleLogin}>Login with MetaMask</button>
+        </div>
+        <div className="login-container">
+          <h2>Verification Page</h2>
+          <button id="login_btn" onClick={handleVerification}>Go to Verification Page</button>
+        </div>
       </div>
     </div>
-    </>
   );
 };
 
