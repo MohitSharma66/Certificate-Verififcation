@@ -10,11 +10,7 @@ const PORT = process.env.PORT || 3001;
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? [process.env.FRONTEND_URL].filter(Boolean) // Only allow specific frontend URL in production
-    : [
-        'http://localhost:3000', // Development frontend
-        'http://localhost:5173', // Vite dev server
-        process.env.FRONTEND_URL
-      ].filter(Boolean),
+    : true, // Allow all origins in development
   credentials: false, // Not using cookies, so disable credentials
   optionsSuccessStatus: 200
 };
