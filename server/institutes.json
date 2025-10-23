@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "instituteId": "00102",
+    "instituteName": "00102",
+    "passwordHash": "$2b$12$PIZODOjTrFNTYU9s.sxUs.p4b5OfIGroQ5eY6fjyU3KvBgNGBqMWS",
+    "credentialHash": "ef1ff964e332146eafef5393ffa310528750402f78a9a93a217b431d80b5c440",
+    "createdAt": "2025-10-23T15:56:22.518Z",
+    "isActive": true
+  }
+]
