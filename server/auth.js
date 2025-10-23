@@ -8,7 +8,8 @@ const SALT_ROUNDS = 12;
 
 // Blockchain configuration
 const getBlockchainProvider = () => {
-  const provider = new ethers.JsonRpcProvider('http://127.0.0.1:7545');
+  const blockchainUrl = process.env.BLOCKCHAIN_RPC_URL || 'http://127.0.0.1:8080';
+  const provider = new ethers.JsonRpcProvider(blockchainUrl);
   return provider;
 };
 
