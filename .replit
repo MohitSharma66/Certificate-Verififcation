@@ -21,6 +21,10 @@ args = "Frontend"
 task = "workflow.run"
 args = "Backend"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Blockchain"
+
 [[workflows.workflow]]
 name = "Frontend"
 author = "agent"
@@ -45,6 +49,18 @@ waitForPort = 3001
 [workflows.workflow.metadata]
 outputType = "console"
 
+[[workflows.workflow]]
+name = "Blockchain"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node_modules/.bin/ganache --port 8080 --networkId 5777 --gasLimit 6721975 --gasPrice 20000000000"
+waitForPort = 8080
+
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[ports]]
 localPort = 3001
 externalPort = 3001
@@ -58,6 +74,11 @@ localPort = 5001
 externalPort = 5173
 
 [[ports]]
+localPort = 8080
+externalPort = 8080
+exposeLocalhost = true
+
+[[ports]]
 localPort = 38105
 externalPort = 3002
 
@@ -68,6 +89,10 @@ externalPort = 3000
 [[ports]]
 localPort = 43707
 externalPort = 80
+
+[[ports]]
+localPort = 44987
+externalPort = 4200
 
 [[ports]]
 localPort = 46007
