@@ -34,7 +34,7 @@ const getBlockchainContract = async () => {
     const contractAddress = contractNetworks[networkId].address;
     console.log('Contract address:', contractAddress);
     
-    const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY || '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d';
+    const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY || '0xd28002662fbde11e33b1b077acbfedf15dc952d3a657f4912766e4a5e2ca62e4';
     
     const wallet = new ethers.Wallet(privateKey, provider);
     const contract = new ethers.Contract(contractAddress, contractABI, wallet);
