@@ -69,6 +69,10 @@ externalPort = 3000
 localPort = 43707
 externalPort = 80
 
+[[ports]]
+localPort = 46007
+externalPort = 3003
+
 [deployment]
 deploymentTarget = "vm"
 run = ["bash", "-c", "cd server && npm start & cd certificate-frontend && npm run dev -- --port 5000 --host 0.0.0.0"]
