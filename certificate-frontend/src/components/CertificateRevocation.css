@@ -1,0 +1,136 @@
+.certificate-revocation h2 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.search-box {
+  margin: 20px 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.loading-message {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+}
+
+.results-count {
+  margin: 15px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.no-data {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.certificates-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.certificates-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.certificates-table th {
+  background: #f5f7fa;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.certificates-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.certificates-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.certificates-table tbody tr.revoked-row {
+  opacity: 0.6;
+  background: #fafafa;
+}
+
+.certificates-table code {
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.valid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.revoked {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.revoke-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.revoke-button:hover {
+  background: #c82333;
+}
+
+.revoked-text {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .certificates-table {
+    font-size: 12px;
+  }
+  
+  .certificates-table th,
+  .certificates-table td {
+    padding: 10px 8px;
+  }
+}

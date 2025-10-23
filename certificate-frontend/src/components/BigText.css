@@ -1,3 +1,13 @@
+.hero-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
 .hero-text {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -54,6 +64,58 @@
   animation: slideUp 0.8s ease-out 0.2s backwards;
 }
 
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 800px;
+  width: 100%;
+  margin-top: 3rem;
+}
+
+.action-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.action-card h2 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.action-card p {
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+.action-button {
+  padding: 14px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
 @media (max-width: 768px) {
   .hero-text {
     padding: 2rem 1rem;
@@ -65,5 +127,10 @@
 
   .hero-text .sub-text {
     font-size: 1rem;
+  }
+
+  .action-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }

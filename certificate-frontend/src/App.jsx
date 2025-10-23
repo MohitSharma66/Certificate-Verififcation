@@ -1,15 +1,25 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
-import { AuthContext, AuthProvider } from './components/AuthContext';
-import Form from './components/Form';
-import Login from './components/Login';
+import { AuthProvider } from './context/AuthContext';
+import AuthContext from './context/AuthContext';
+import BigText from './components/BigText';
 import Verification from './components/Verification';
+import AuthPage from './components/AuthPage';
+import Dashboard from './components/Dashboard';
 
-// ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useContext(AuthContext);
-  return isAuthenticated ? children : <Navigate to="/" />;
+  const { isAuthenticated, loading } = useContext(AuthContext);
+  
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>;
+  }
+  
+  return isAuthenticated ? children : <Navigate to="/auth" />;
+};
+
+const HomePage = () => {
+  return <BigText />;
 };
 
 function App() {
@@ -17,17 +27,18 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route path="/verify" element={<Verification />} />
           <Route
-            path="/form"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <Form />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
-          <Route path="/verification" element={<Verification />} />
-          <Route path="/verify" element={<Verification />} />
         </Routes>
       </Router>
     </AuthProvider>
