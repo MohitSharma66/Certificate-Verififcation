@@ -159,18 +159,16 @@ app.post('/unique-id/generate', authMiddleware, async (req, res) => {
     const uniqueId = uuidv4();
     const instituteId = req.user.instituteId;
     
-    // Store on blockchain
+    // Store on blockchain - REQUIRED
     try {
       const contract = await getBlockchainContract();
-      if (contract) {
-        const tx = await contract.generateUniqueId(uniqueId, instituteId);
-        await tx.wait();
-        console.log('Unique ID registered on blockchain:', tx.hash);
-      }
+      const tx = await contract.generateUniqueId(uniqueId, instituteId);
+      await tx.wait();
+      console.log('Unique ID registered on blockchain:', tx.hash);
     } catch (blockchainError) {
       console.error('Blockchain error:', blockchainError);
       return res.status(500).json({ 
-        error: 'Failed to register unique ID on blockchain: ' + blockchainError.message 
+        error: 'Failed to register unique ID on blockchain. Please ensure blockchain is running: ' + blockchainError.message 
       });
     }
     
@@ -299,20 +297,29 @@ app.post('/certificates', authMiddleware, async (req, res) => {
       success = true;
     }
     
-    // Store on blockchain
+    // Store on blockchain - REQUIRED
     try {
       const contract = await getBlockchainContract();
-      if (contract) {
-        const tx = await contract.issueCertificate(
-          certificateHash,
-          req.user.instituteId,
-          req.user.instituteName
-        );
-        await tx.wait();
-        console.log('Certificate registered on blockchain:', tx.hash);
-      }
+      const tx = await contract.issueCertificate(
+        certificateHash,
+        req.user.instituteId,
+        req.user.instituteName
+      );
+      await tx.wait();
+      console.log('Certificate registered on blockchain:', tx.hash);
     } catch (blockchainError) {
       console.error('Blockchain error:', blockchainError);
+      // Rollback certificate if blockchain fails
+      if (success && db) {
+        await db.collection('certificates').deleteOne({ id });
+      } else if (success && !db) {
+        const certificates = readFromFile(certificatesPath);
+        const filtered = certificates.filter(c => c.id !== id);
+        writeToFile(certificatesPath, filtered);
+      }
+      return res.status(500).json({ 
+        error: 'Failed to register certificate on blockchain. Please ensure blockchain is running: ' + blockchainError.message 
+      });
     }
     
     if (success) {
@@ -437,17 +444,18 @@ app.delete('/certificates/:certificateId', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'You can only revoke certificates issued by your institute' });
     }
     
-    // Revoke on blockchain
+    // Revoke on blockchain - REQUIRED
     try {
       const contract = await getBlockchainContract();
-      if (contract) {
-        const certificateHash = hashCertificateId(certificateId, certificate.publicKey);
-        const tx = await contract.revokeCertificate(certificateHash);
-        await tx.wait();
-        console.log('Certificate revoked on blockchain:', tx.hash);
-      }
+      const certificateHash = hashCertificateId(certificateId, certificate.publicKey);
+      const tx = await contract.revokeCertificate(certificateHash);
+      await tx.wait();
+      console.log('Certificate revoked on blockchain:', tx.hash);
     } catch (blockchainError) {
       console.error('Blockchain revocation error:', blockchainError);
+      return res.status(500).json({ 
+        error: 'Failed to revoke certificate on blockchain. Please ensure blockchain is running: ' + blockchainError.message 
+      });
     }
     
     if (updateSuccess) {
