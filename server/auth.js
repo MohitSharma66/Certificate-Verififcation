@@ -1,61 +1,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const { ethers } = require('ethers');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const SALT_ROUNDS = 12;
 
-// Blockchain configuration
-const getBlockchainProvider = () => {
-  const blockchainUrl = process.env.BLOCKCHAIN_RPC_URL || 'http://127.0.0.1:8080';
-  const provider = new ethers.JsonRpcProvider(blockchainUrl);
-  return provider;
-};
-
-const getBlockchainContract = async () => {
-  try {
-    const contractABI = require('../build/contracts/InstituteRegistry.json').abi;
-    const contractNetworks = require('../build/contracts/InstituteRegistry.json').networks;
-    
-    const provider = getBlockchainProvider();
-    
-    // Get network ID using net_version for Truffle compatibility
-    const networkId = await provider.send('net_version', []);
-    console.log('Network ID:', networkId);
-    console.log('Available networks:', Object.keys(contractNetworks));
-    
-    if (!contractNetworks[networkId]) {
-      console.error(`Contract not deployed on network ${networkId}`);
-      console.error('Available networks:', Object.keys(contractNetworks));
-      throw new Error('InstituteRegistry contract not deployed. Please deploy the contract first.');
-    }
-    
-    const contractAddress = contractNetworks[networkId].address;
-    console.log('Contract address:', contractAddress);
-    
-    const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY || '0x1b0262a17cd6fc6afe84ec81eed83a5b9af6cc7a8ccae4ef795afb3940b42548';
-    
-    const wallet = new ethers.Wallet(privateKey, provider);
-    const contract = new ethers.Contract(contractAddress, contractABI, wallet);
-    
-    return contract;
-  } catch (error) {
-    console.error('Error loading blockchain contract:', error);
-    throw error;
-  }
-};
-
-// Generate credential hash for blockchain (instituteId + passwordHash)
-const generateCredentialHash = (instituteId, passwordHash) => {
-  const combined = `${instituteId}:${passwordHash}`;
-  return crypto.createHash('sha256').update(combined).digest('hex');
-};
-
-// Convert string to bytes32 for Solidity
-const stringToBytes32 = (str) => {
-  return ethers.id(str);
-};
 
 // Authentication middleware
 const authMiddleware = (req, res, next) => {
@@ -77,7 +25,7 @@ const authMiddleware = (req, res, next) => {
 
 // Register institute
 const registerInstitute = async (db, instituteData) => {
-  const { instituteId, instituteName, password } = instituteData;
+  const { instituteId, instituteName, password, blockchainTxHash, walletAddress } = instituteData;
   
   // Validate inputs
   if (!instituteId || !instituteName || !password) {
@@ -116,35 +64,13 @@ const registerInstitute = async (db, instituteData) => {
   // Hash password
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   
-  // Generate credential hash for blockchain
-  const credentialHash = generateCredentialHash(instituteId, passwordHash);
-  const credentialHashBytes32 = stringToBytes32(credentialHash);
-  
-  // Store in blockchain - REQUIRED
-  try {
-    const contract = await getBlockchainContract();
-    const tx = await contract.registerInstitute(
-      instituteId,
-      instituteName,
-      credentialHashBytes32
-    );
-    await tx.wait();
-    console.log('Institute registered on blockchain:', tx.hash);
-  } catch (blockchainError) {
-    console.error('Blockchain registration error:', blockchainError);
-    // Rollback database entry if blockchain fails
-    if (db) {
-      await institutesCollection.deleteOne({ instituteId });
-    }
-    throw new Error('Failed to register on blockchain. Please ensure the blockchain is running and the contract is deployed: ' + blockchainError.message);
-  }
-  
-  // Store in MongoDB
+  // Store in database
   const institute = {
     instituteId,
     instituteName,
     passwordHash,
-    credentialHash,
+    blockchainTxHash: blockchainTxHash || null,
+    walletAddress: walletAddress || null,
     createdAt: new Date().toISOString(),
     isActive: true
   };
@@ -161,10 +87,16 @@ const registerInstitute = async (db, instituteData) => {
     fs.writeFileSync(institutesPath, JSON.stringify(institutes, null, 2), 'utf8');
   }
   
+  console.log('Institute registered successfully:', instituteId);
+  if (blockchainTxHash) {
+    console.log('Blockchain transaction hash:', blockchainTxHash);
+  }
+  
   return {
     instituteId,
     instituteName,
-    createdAt: institute.createdAt
+    createdAt: institute.createdAt,
+    blockchainTxHash: institute.blockchainTxHash
   };
 };
 
@@ -211,26 +143,7 @@ const loginInstitute = async (db, loginData) => {
     throw new Error('Invalid institute ID or password');
   }
   
-  // Step 2: Blockchain verification - REQUIRED
-  try {
-    const contract = await getBlockchainContract();
-    const credentialHash = generateCredentialHash(instituteId, institute.passwordHash);
-    const credentialHashBytes32 = stringToBytes32(credentialHash);
-    
-    const isValid = await contract.verifyInstituteCredentials(
-      instituteId,
-      credentialHashBytes32
-    );
-    
-    if (!isValid) {
-      throw new Error('Blockchain verification failed - credentials do not match');
-    }
-    
-    console.log('Blockchain verification successful');
-  } catch (blockchainError) {
-    console.error('Blockchain verification error:', blockchainError);
-    throw new Error('Blockchain verification failed. Please ensure the blockchain is running: ' + blockchainError.message);
-  }
+  console.log('Login successful for institute:', instituteId);
   
   // Generate JWT token
   const token = jwt.sign(
@@ -255,7 +168,5 @@ module.exports = {
   authMiddleware,
   registerInstitute,
   loginInstitute,
-  getBlockchainContract,
-  generateCredentialHash,
   JWT_SECRET
 };

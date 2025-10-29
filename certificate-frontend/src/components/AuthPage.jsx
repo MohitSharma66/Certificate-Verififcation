@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { connectMetaMask, registerInstituteOnBlockchain } from '../blockchain/institute';
 import './AuthPage.css';
 
 const AuthPage = () => {
@@ -12,6 +13,7 @@ const AuthPage = () => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -20,11 +22,13 @@ const AuthPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setError('');
+    setStatus('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setStatus('');
     setLoading(true);
 
     try {
@@ -62,6 +66,18 @@ const AuthPage = () => {
           throw new Error('Password must be at least 8 characters long');
         }
 
+        setStatus('Connecting to MetaMask...');
+        const walletInfo = await connectMetaMask();
+        
+        setStatus('Registering on blockchain...');
+        const credentialHash = `${formData.instituteId}:${Date.now()}`;
+        const blockchainResult = await registerInstituteOnBlockchain(
+          formData.instituteId,
+          formData.instituteName,
+          credentialHash
+        );
+
+        setStatus('Completing registration...');
         const response = await fetch(`${apiBaseUrl}/auth/register`, {
           method: 'POST',
           headers: {
@@ -70,7 +86,9 @@ const AuthPage = () => {
           body: JSON.stringify({
             instituteId: formData.instituteId,
             instituteName: formData.instituteName,
-            password: formData.password
+            password: formData.password,
+            blockchainTxHash: blockchainResult.transactionHash,
+            walletAddress: walletInfo.account
           })
         });
 
@@ -80,7 +98,7 @@ const AuthPage = () => {
           throw new Error(data.error || 'Registration failed');
         }
 
-        alert('Registration successful! Please log in.');
+        alert(`Registration successful!\n\nBlockchain TX: ${blockchainResult.transactionHash}\n\nPlease log in.`);
         setIsLogin(true);
         setFormData({
           instituteId: '',
@@ -92,6 +110,7 @@ const AuthPage = () => {
     } catch (err) {
       console.error('Auth error:', err);
       setError(err.message);
+      setStatus('');
     } finally {
       setLoading(false);
     }
@@ -108,6 +127,7 @@ const AuthPage = () => {
         </p>
         
         {error && <div className="error-message">{error}</div>}
+        {status && <div className="status-message">{status}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">

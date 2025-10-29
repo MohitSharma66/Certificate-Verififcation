@@ -14,6 +14,15 @@ The application leverages blockchain technology to ensure certificate immutabili
 - Frontend (Vite) is running on port 5000 and properly serving the application
 - Installed all required npm packages for root, server, and certificate-frontend directories
 
+### Architecture Change: MetaMask Integration
+- Deployed InstituteRegistry smart contract to Ganache (Network ID: 5777)
+- Updated frontend to use MetaMask for blockchain transactions instead of backend
+- Created new blockchain helper module (institute.js) for MetaMask wallet connection and institute registration
+- Removed blockchain transaction code from backend auth.js (no more hardcoded private keys)
+- Backend now only stores metadata (instituteId, instituteName, passwordHash, blockchainTxHash, walletAddress)
+- Registration flow now: Connect MetaMask → Sign blockchain transaction → Store metadata in backend
+- Login flow simplified: Only verify instituteId and password (no blockchain verification needed)
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
