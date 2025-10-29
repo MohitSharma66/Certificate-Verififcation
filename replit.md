@@ -4,6 +4,16 @@ This is a blockchain-based certificate verification system that enables educatio
 
 The application leverages blockchain technology to ensure certificate immutability and provides a web interface for both certificate issuance and verification workflows.
 
+# Recent Changes
+
+## October 29, 2025
+- Fixed all workflow startup issues by installing missing dependencies
+- All three workflows (Frontend, Backend, Blockchain) are now running successfully
+- Backend is running on port 3001 using file-based storage (MongoDB not configured for development)
+- Blockchain (Ganache) is running on port 8080 with 10 test accounts
+- Frontend (Vite) is running on port 5000 and properly serving the application
+- Installed all required npm packages for root, server, and certificate-frontend directories
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
