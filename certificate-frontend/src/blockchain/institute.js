@@ -9,13 +9,9 @@ const getMetaMaskWeb3 = async () => {
   throw new Error("MetaMask not found. Please install MetaMask to use this feature.");
 };
 
-const getLocalWeb3 = () => {
-  return new Web3('http://127.0.0.1:8080');
-};
-
-const getInstituteContract = async (useMetaMask = false) => {
+const getInstituteContract = async () => {
   try {
-    const web3Instance = useMetaMask ? await getMetaMaskWeb3() : getLocalWeb3();
+    const web3Instance = await getMetaMaskWeb3();
     const networkId = await web3Instance.eth.net.getId();
     
     const deployedNetwork = InstituteRegistry.networks[networkId];
@@ -51,10 +47,6 @@ export const connectMetaMask = async () => {
 
     const web3 = new Web3(window.ethereum);
     const networkId = await web3.eth.net.getId();
-    
-    if (Number(networkId) !== 5777) {
-      throw new Error("Please connect MetaMask to the local Ganache network (Network ID: 5777)");
-    }
 
     return {
       account: accounts[0],
@@ -68,7 +60,7 @@ export const connectMetaMask = async () => {
 
 export const registerInstituteOnBlockchain = async (instituteId, instituteName, credentialHash) => {
   try {
-    const { contract, web3 } = await getInstituteContract(true);
+    const { contract, web3 } = await getInstituteContract();
     const accounts = await web3.eth.getAccounts();
 
     if (!accounts || accounts.length === 0) {
@@ -97,7 +89,7 @@ export const registerInstituteOnBlockchain = async (instituteId, instituteName, 
 
 export const verifyInstituteOnBlockchain = async (instituteId, credentialHash) => {
   try {
-    const { contract, web3 } = await getInstituteContract(false);
+    const { contract, web3 } = await getInstituteContract();
     
     const credentialHashBytes32 = web3.utils.soliditySha3(credentialHash);
     
@@ -114,7 +106,7 @@ export const verifyInstituteOnBlockchain = async (instituteId, credentialHash) =
 
 export const getInstituteInfo = async (instituteId) => {
   try {
-    const { contract } = await getInstituteContract(false);
+    const { contract } = await getInstituteContract();
     
     const info = await contract.methods.getInstituteInfo(instituteId).call();
     
