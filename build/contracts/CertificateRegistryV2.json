@@ -10973,12 +10973,12 @@
     "11155111": {
       "events": {},
       "links": {},
-      "address": "0x7E0103797e7AbE11C1cE1E9F1F56a16492210346",
-      "transactionHash": "0x6f70076b7cd01fd6f85b206fb153219e0f459d519604fba0e053784f0044a8ff"
+      "address": "0x82Cd8a7a450D9EF1559CB007DAf32b3CDEf2F15e",
+      "transactionHash": "0x4234cc4d30082d61fbed17673714c4f4b267866ee6f87aff4234b3740f37d485"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-10-29T18:57:22.703Z",
+  "updatedAt": "2025-11-02T22:52:37.662Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
