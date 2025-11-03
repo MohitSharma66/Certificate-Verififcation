@@ -15,5 +15,14 @@
     "walletAddress": "0xbf8d779294b28792c1fdb5169ce8a6cb3b8ed212",
     "createdAt": "2025-11-02T22:55:27.094Z",
     "isActive": true
+  },
+  {
+    "instituteId": "00105",
+    "instituteName": "IIIT Naya Raipur",
+    "passwordHash": "$2b$12$UeWFQSBryXcvpRzjsIS0DuXwdeGHUE.AvEnJChYgz8QK2OA848hhK",
+    "blockchainTxHash": "0x86de43b92225c05aec17d58aa914eb54a337feba7e2af5c518e36cc2b1eb3c05",
+    "walletAddress": "0xbf8d779294b28792c1fdb5169ce8a6cb3b8ed212",
+    "createdAt": "2025-11-03T22:42:04.497Z",
+    "isActive": true
   }
 ]
