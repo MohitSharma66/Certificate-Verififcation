@@ -1,8 +1,53 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { ethers } = require('ethers');
+const fs = require('fs');
+const path = require('path');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const SALT_ROUNDS = 12;
+
+// Blockchain configuration
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_INFURA_KEY';
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+
+// Load contract ABI
+const contractPath = path.join(__dirname, '../build/contracts/CertificateRegistry.json');
+let CONTRACT_ABI;
+try {
+  const contractJson = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+  CONTRACT_ABI = contractJson.abi;
+} catch (error) {
+  console.error('Warning: Could not load contract ABI:', error.message);
+  CONTRACT_ABI = [];
+}
+
+// Get blockchain contract instance
+const getBlockchainContract = async () => {
+  if (!PRIVATE_KEY) {
+    throw new Error('PRIVATE_KEY environment variable not set');
+  }
+  
+  if (!CONTRACT_ADDRESS) {
+    throw new Error('CONTRACT_ADDRESS environment variable not set');
+  }
+  
+  if (!CONTRACT_ABI || CONTRACT_ABI.length === 0) {
+    throw new Error('Contract ABI not loaded');
+  }
+  
+  try {
+    const provider = new ethers.JsonRpcProvider(SEPOLIA_RPC_URL);
+    const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet);
+    
+    return contract;
+  } catch (error) {
+    console.error('Error creating blockchain contract instance:', error);
+    throw error;
+  }
+};
 
 
 // Authentication middleware
@@ -168,5 +213,6 @@ module.exports = {
   authMiddleware,
   registerInstitute,
   loginInstitute,
+  getBlockchainContract,
   JWT_SECRET
 };
