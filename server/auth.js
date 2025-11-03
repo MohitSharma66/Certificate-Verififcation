@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const SALT_ROUNDS = 12;
 
 // Blockchain configuration
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_INFURA_KEY';
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 
@@ -25,6 +25,10 @@ try {
 
 // Get blockchain contract instance
 const getBlockchainContract = async () => {
+  if (!SEPOLIA_RPC_URL) {
+    throw new Error('SEPOLIA_RPC_URL environment variable not set. Please configure your Sepolia RPC endpoint.');
+  }
+  
   if (!PRIVATE_KEY) {
     throw new Error('PRIVATE_KEY environment variable not set');
   }
