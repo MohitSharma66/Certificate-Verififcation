@@ -7,9 +7,21 @@ const alchemyWeb3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/${import.meta
 // Get MetaMask Web3 instance for transactions
 const getMetaMaskWeb3 = async () => {
   if (typeof window !== 'undefined' && window.ethereum) {
-    // Request account access
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    return new Web3(window.ethereum);
+    const web3 = new Web3(window.ethereum);
+    
+    const networkId = await web3.eth.net.getId();
+    const SEPOLIA_NETWORK_ID = 11155111;
+    
+    if (Number(networkId) !== SEPOLIA_NETWORK_ID) {
+      throw new Error(
+        `Wrong network! Please switch to Sepolia testnet in MetaMask.\n\n` +
+        `Current network ID: ${networkId}\n` +
+        `Required: Sepolia (${SEPOLIA_NETWORK_ID})`
+      );
+    }
+    
+    return web3;
   }
   throw new Error("MetaMask not found. Please install MetaMask to use this feature.");
 };

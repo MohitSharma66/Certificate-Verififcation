@@ -14,9 +14,18 @@ const getInstituteContract = async () => {
     const web3Instance = await getMetaMaskWeb3();
     const networkId = await web3Instance.eth.net.getId();
     
+    const SEPOLIA_NETWORK_ID = 11155111;
+    if (Number(networkId) !== SEPOLIA_NETWORK_ID) {
+      throw new Error(
+        `Wrong network! Please switch to Sepolia testnet in MetaMask.\n\n` +
+        `Current network ID: ${networkId}\n` +
+        `Required: Sepolia (${SEPOLIA_NETWORK_ID})`
+      );
+    }
+    
     const deployedNetwork = InstituteRegistry.networks[networkId];
     if (!deployedNetwork) {
-      throw new Error("InstituteRegistry not deployed on this network. Please ensure you're connected to the correct network.");
+      throw new Error("InstituteRegistry not deployed on Sepolia network. Please contact support.");
     }
 
     const contract = new web3Instance.eth.Contract(
@@ -47,6 +56,15 @@ export const connectMetaMask = async () => {
 
     const web3 = new Web3(window.ethereum);
     const networkId = await web3.eth.net.getId();
+
+    const SEPOLIA_NETWORK_ID = 11155111;
+    if (Number(networkId) !== SEPOLIA_NETWORK_ID) {
+      throw new Error(
+        `Wrong network! Please switch to Sepolia testnet in MetaMask.\n\n` +
+        `Current network ID: ${networkId}\n` +
+        `Required: Sepolia (${SEPOLIA_NETWORK_ID})`
+      );
+    }
 
     return {
       account: accounts[0],
