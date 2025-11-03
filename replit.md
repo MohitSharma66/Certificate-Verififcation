@@ -6,6 +6,17 @@ The application leverages blockchain technology to ensure certificate immutabili
 
 # Recent Changes
 
+## November 3, 2025 - Backend Blockchain Integration
+- **Fixed blockchain connectivity**: Added `getBlockchainContract` function to `server/auth.js` enabling backend blockchain operations
+- **Implemented proper validation**: All three environment variables (SEPOLIA_RPC_URL, PRIVATE_KEY, CONTRACT_ADDRESS) now strictly enforced
+- **Configured environment secrets**: Set up secure storage for blockchain credentials in Replit Secrets
+- **Updated .env.example**: Added comprehensive documentation for blockchain configuration
+- Backend can now:
+  - Generate unique IDs on blockchain via `/unique-id/generate` endpoint
+  - Issue certificates on blockchain via `/certificate/issue` endpoint  
+  - Revoke certificates on blockchain via `/certificate/revoke` endpoint
+- Uses ethers.js v6 for blockchain interactions with Sepolia testnet
+
 ## November 3, 2025 - Sepolia Testnet Migration
 - **Migrated from Ganache to Sepolia testnet** for production-ready blockchain deployment
 - Deployed all 4 smart contracts to Sepolia testnet (Chain ID: 11155111):
