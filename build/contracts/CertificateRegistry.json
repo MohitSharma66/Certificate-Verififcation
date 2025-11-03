@@ -7044,12 +7044,12 @@
     "11155111": {
       "events": {},
       "links": {},
-      "address": "0xa41c5FC582C43E7E473D34fba01E4C6618dd4B15",
-      "transactionHash": "0xe1399c3ee011f6f2a5aebe1a287e3eb3f4505814aaa6a34220d108d0c881a8b5"
+      "address": "0xA31F1A83Acbc44d87cB23a98D9c83e75D10236E5",
+      "transactionHash": "0x9bb14c37b7adcb53a73e8df91c6a4ffb894414e7c75190695075d3bb7f3a0ad6"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-11-02T22:51:49.240Z",
+  "updatedAt": "2025-11-03T22:18:25.848Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

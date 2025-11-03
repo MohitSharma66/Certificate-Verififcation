@@ -7224,12 +7224,12 @@
     "11155111": {
       "events": {},
       "links": {},
-      "address": "0x2FC85a179180c93B774377534a378a0346dCeFdc",
-      "transactionHash": "0x10d4d4b647635838c840c604d858ec93e65ba3fce71c1221ef6b63d26eddb17d"
+      "address": "0xe033615aB3FB5Efb9fE3646CBBD51A409B799AdC",
+      "transactionHash": "0x9dbdab5ecc291147587751e251ed9d13a2693601e8f100107d99fdf1784cdaaf"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-11-02T22:53:14.010Z",
+  "updatedAt": "2025-11-03T22:19:38.525Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
