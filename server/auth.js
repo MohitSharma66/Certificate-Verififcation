@@ -10,20 +10,32 @@ const SALT_ROUNDS = 12;
 // Blockchain configuration
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const CERTIFICATE_REGISTRY_ADDRESS = process.env.CONTRACT_ADDRESS;
+const INSTITUTE_REGISTRY_ADDRESS = process.env.INSTITUTE_REGISTRY_ADDRESS;
 
-// Load contract ABI
-const contractPath = path.join(__dirname, '../build/contracts/CertificateRegistry.json');
-let CONTRACT_ABI;
+// Load CertificateRegistry ABI
+const certificateContractPath = path.join(__dirname, '../build/contracts/CertificateRegistry.json');
+let CERTIFICATE_REGISTRY_ABI;
 try {
-  const contractJson = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
-  CONTRACT_ABI = contractJson.abi;
+  const contractJson = JSON.parse(fs.readFileSync(certificateContractPath, 'utf8'));
+  CERTIFICATE_REGISTRY_ABI = contractJson.abi;
 } catch (error) {
-  console.error('Warning: Could not load contract ABI:', error.message);
-  CONTRACT_ABI = [];
+  console.error('Warning: Could not load CertificateRegistry ABI:', error.message);
+  CERTIFICATE_REGISTRY_ABI = [];
 }
 
-// Get blockchain contract instance
+// Load InstituteRegistry ABI
+const instituteContractPath = path.join(__dirname, '../build/contracts/InstituteRegistry.json');
+let INSTITUTE_REGISTRY_ABI;
+try {
+  const contractJson = JSON.parse(fs.readFileSync(instituteContractPath, 'utf8'));
+  INSTITUTE_REGISTRY_ABI = contractJson.abi;
+} catch (error) {
+  console.error('Warning: Could not load InstituteRegistry ABI:', error.message);
+  INSTITUTE_REGISTRY_ABI = [];
+}
+
+// Get CertificateRegistry contract instance (for certificate operations)
 const getBlockchainContract = async () => {
   if (!SEPOLIA_RPC_URL) {
     throw new Error('SEPOLIA_RPC_URL environment variable not set. Please configure your Sepolia RPC endpoint.');
@@ -33,22 +45,52 @@ const getBlockchainContract = async () => {
     throw new Error('PRIVATE_KEY environment variable not set');
   }
   
-  if (!CONTRACT_ADDRESS) {
+  if (!CERTIFICATE_REGISTRY_ADDRESS) {
     throw new Error('CONTRACT_ADDRESS environment variable not set');
   }
   
-  if (!CONTRACT_ABI || CONTRACT_ABI.length === 0) {
-    throw new Error('Contract ABI not loaded');
+  if (!CERTIFICATE_REGISTRY_ABI || CERTIFICATE_REGISTRY_ABI.length === 0) {
+    throw new Error('CertificateRegistry ABI not loaded');
   }
   
   try {
     const provider = new ethers.JsonRpcProvider(SEPOLIA_RPC_URL);
     const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet);
+    const contract = new ethers.Contract(CERTIFICATE_REGISTRY_ADDRESS, CERTIFICATE_REGISTRY_ABI, wallet);
     
     return contract;
   } catch (error) {
-    console.error('Error creating blockchain contract instance:', error);
+    console.error('Error creating CertificateRegistry contract instance:', error);
+    throw error;
+  }
+};
+
+// Get InstituteRegistry contract instance (for unique ID operations)
+const getInstituteRegistryContract = async () => {
+  if (!SEPOLIA_RPC_URL) {
+    throw new Error('SEPOLIA_RPC_URL environment variable not set. Please configure your Sepolia RPC endpoint.');
+  }
+  
+  if (!PRIVATE_KEY) {
+    throw new Error('PRIVATE_KEY environment variable not set');
+  }
+  
+  if (!INSTITUTE_REGISTRY_ADDRESS) {
+    throw new Error('INSTITUTE_REGISTRY_ADDRESS environment variable not set');
+  }
+  
+  if (!INSTITUTE_REGISTRY_ABI || INSTITUTE_REGISTRY_ABI.length === 0) {
+    throw new Error('InstituteRegistry ABI not loaded');
+  }
+  
+  try {
+    const provider = new ethers.JsonRpcProvider(SEPOLIA_RPC_URL);
+    const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(INSTITUTE_REGISTRY_ADDRESS, INSTITUTE_REGISTRY_ABI, wallet);
+    
+    return contract;
+  } catch (error) {
+    console.error('Error creating InstituteRegistry contract instance:', error);
     throw error;
   }
 };
@@ -218,5 +260,6 @@ module.exports = {
   registerInstitute,
   loginInstitute,
   getBlockchainContract,
+  getInstituteRegistryContract,
   JWT_SECRET
 };

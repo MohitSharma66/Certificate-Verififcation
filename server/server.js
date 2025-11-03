@@ -7,7 +7,8 @@ const {
   authMiddleware, 
   registerInstitute, 
   loginInstitute,
-  getBlockchainContract
+  getBlockchainContract,
+  getInstituteRegistryContract
 } = require('./auth');
 
 const app = express();
@@ -161,7 +162,7 @@ app.post('/unique-id/generate', authMiddleware, async (req, res) => {
     
     // Store on blockchain - REQUIRED
     try {
-      const contract = await getBlockchainContract();
+      const contract = await getInstituteRegistryContract();
       const tx = await contract.generateUniqueId(uniqueId, instituteId);
       await tx.wait();
       console.log('Unique ID registered on blockchain:', tx.hash);
