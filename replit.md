@@ -6,16 +6,27 @@ The application leverages blockchain technology to ensure certificate immutabili
 
 # Recent Changes
 
+## November 3, 2025 - Sepolia Testnet Migration
+- **Migrated from Ganache to Sepolia testnet** for production-ready blockchain deployment
+- Deployed all 4 smart contracts to Sepolia testnet (Chain ID: 11155111):
+  - InstituteRegistry: 0x9fd047D340860589FA274B5a07A9AEFec28b56DB
+  - SimpleCertificateRegistry: 0xe033615aB3FB5Efb9fE3646CBBD51A409B799AdC
+  - CertificateRegistry: 0xA31F1A83Acbc44d87cB23a98D9c83e75D10236E5
+  - CertificateRegistryV2: 0xbB9b70BB804AFe74Fb2a9AaC9141a932C153489e
+- Added network validation in frontend to enforce Sepolia connections
+- Configured Alchemy API for Sepolia RPC endpoint
+- Updated environment configuration for Replit deployment
+- Created documentation: SEPOLIA_DEPLOYMENT.md and CONTRACT_ARTIFACTS_VERIFICATION.md
+- Removed Ganache workflow (no longer needed)
+- Frontend now displays clear error messages if user is on wrong network
+
 ## October 29, 2025
 - Fixed all workflow startup issues by installing missing dependencies
-- All three workflows (Frontend, Backend, Blockchain) are now running successfully
 - Backend is running on port 3001 using file-based storage (MongoDB not configured for development)
-- Blockchain (Ganache) is running on port 8080 with 10 test accounts
 - Frontend (Vite) is running on port 5000 and properly serving the application
 - Installed all required npm packages for root, server, and certificate-frontend directories
 
 ### Architecture Change: MetaMask Integration
-- Deployed InstituteRegistry smart contract to Ganache (Network ID: 5777)
 - Updated frontend to use MetaMask for blockchain transactions instead of backend
 - Created new blockchain helper module (institute.js) for MetaMask wallet connection and institute registration
 - Removed blockchain transaction code from backend auth.js (no more hardcoded private keys)
@@ -31,7 +42,8 @@ Preferred communication style: Simple, everyday language.
 
 ## Frontend Architecture
 - **Technology Stack**: React 18 with Vite as the build tool and development server
-- **Web3 Integration**: Uses Web3.js library to interact with Ethereum blockchain via Ganache local network
+- **Web3 Integration**: Uses Web3.js library to interact with Ethereum blockchain via MetaMask and Alchemy
+- **Network**: Connects to Sepolia testnet with network validation to ensure correct chain ID
 - **Routing**: React Router DOM for client-side navigation between different application views
 - **Styling**: CSS modules with component-specific stylesheets for login, forms, verification, and hero sections
 - **Security**: Helmet middleware for HTTP security headers
@@ -39,9 +51,11 @@ Preferred communication style: Simple, everyday language.
 ## Smart Contract Architecture
 - **Framework**: Truffle development framework for Ethereum smart contract compilation, deployment, and testing
 - **Contracts**: 
+  - `InstituteRegistry` - Contract for institute registration and verification on blockchain
+  - `SimpleCertificateRegistry` - Simplified contract for certificate hash storage
   - `CertificateRegistry` - Main contract for certificate issuance and storage
   - `CertificateRegistryV2` - Updated version of the registry contract
-- **Network**: Configured to work with Ganache local blockchain (port 7545)
+- **Network**: Deployed to Sepolia testnet (Chain ID: 11155111)
 - **Migration Scripts**: Automated deployment scripts for contract versioning
 
 ## Backend Architecture
@@ -59,9 +73,11 @@ Preferred communication style: Simple, everyday language.
 # External Dependencies
 
 ## Blockchain Infrastructure
-- **Ganache**: Local Ethereum blockchain development environment (v7.9.2)
+- **Sepolia Testnet**: Ethereum testnet for production-ready smart contract deployment
+- **Alchemy**: RPC provider for Sepolia blockchain access
 - **Truffle Suite**: Smart contract development framework (v5.11.5)
 - **Web3.js**: JavaScript library for Ethereum blockchain interaction (v4.14.0)
+- **MetaMask**: Web3 wallet for transaction signing and network switching
 
 ## Frontend Dependencies
 - **React Ecosystem**: React 18.3.1 with React DOM and React Router DOM for SPA functionality
