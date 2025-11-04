@@ -1,3 +1,5 @@
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { ethers } = require('ethers');
