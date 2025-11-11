@@ -6,6 +6,17 @@ The application leverages blockchain technology to ensure certificate immutabili
 
 # Recent Changes
 
+## November 11, 2025 - Complete Blockchain Environment Configuration
+- **Configured Replit Secrets**: Set up ALCHEMY_API_KEY and PRIVATE_KEY via Replit's secure secret management
+- **Automated RPC URL Construction**: Updated `server/auth.js` to automatically build SEPOLIA_RPC_URL from ALCHEMY_API_KEY
+- **Frontend Environment Variables**: Configured Vite to inject ALCHEMY_API_KEY into frontend via `vite.config.js`
+- **Updated Frontend Contract Reference**: Changed `certificate.js` from SimpleCertificateRegistry to CertificateRegistryV2
+- **Removed Hardcoded API Keys**: Eliminated fallback API key from frontend code for better security
+- **Contract Addresses Configured**:
+  - CertificateRegistryV2: `0xbB9b70BB804AFe74Fb2a9AaC9141a932C153489e`
+  - InstituteRegistry: `0x9fd047D340860589FA274B5a07A9AEFec28b56DB`
+- System now fully configured to interact with Sepolia testnet blockchain
+
 ## November 11, 2025 - CertificateRegistryV2 Integration Fix
 - **Fixed ABI mismatch**: Updated `server/auth.js` to load CertificateRegistryV2.json ABI instead of CertificateRegistry.json
 - **Corrected function parameters**: Fixed `server/server.js` to call `issueCertificate` with correct signature (certificateHash, instituteName) instead of incorrect 3-parameter call
