@@ -75,19 +75,19 @@ export const issueCertificate = async (certificateHash, instituteName) => {
 
         console.log("Using account:", accounts[0]);
 
-        const gasLimit = 300000;  // Much lower gas limit for simple hash storage
+        const gasLimit = 300000;  // Gas limit for certificate issuance
         
         return contract.methods
-            .storeHash(
-                certificateHash,  // string memory _hash
-                instituteName     // string memory _institution
+            .issueCertificate(
+                certificateHash,  // string memory _certificateHash
+                instituteName     // string memory _instituteName
             )
             .send({ 
                 from: accounts[0], 
                 gas: gasLimit
             });
     } catch (error) {
-        console.error("Error storing certificate hash:", error);
+        console.error("Error issuing certificate:", error);
         throw error;
     }
 };
@@ -105,13 +105,13 @@ export const verifyCertificate = async (certificateHash) => {
     const { contract } = result;
     
     try {
-      console.log("Calling verifyHash with hash:", certificateHash); // Log the certificate hash
+      console.log("Calling verifyCertificate with hash:", certificateHash); // Log the certificate hash
       
-      // Call the simplified contract method with the hash
-      const verifyResult = await contract.methods.verifyHash(certificateHash).call();
+      // Call CertificateRegistryV2 verifyCertificate method
+      const verifyResult = await contract.methods.verifyCertificate(certificateHash).call();
       console.log("Verification Result:", verifyResult); // Log the result returned by the contract
       
-      // Return the result: [exists, institution, timestamp]
+      // Return the result: {isValid, instituteName, timestamp}
       return verifyResult;
       
     } catch (error) {
@@ -132,8 +132,8 @@ export const certificateExists = async (certificateHash) => {
     const { contract } = result;
     
     try {
-      // Use the simplified contract's hashExists method
-      const exists = await contract.methods.hashExists(certificateHash).call();
+      // Use CertificateRegistryV2's certificateExists method
+      const exists = await contract.methods.certificateExists(certificateHash).call();
       return exists;
     } catch (error) {
       console.error("Error checking certificate existence:", error);
@@ -141,7 +141,7 @@ export const certificateExists = async (certificateHash) => {
     }
   };
 
-// Get certificate details from blockchain (for simplified contract)
+// Get certificate details from blockchain (for CertificateRegistryV2)
 export const getCertificateDetails = async (certificateHash) => {
     const result = await getContractInstance(false); // Use Alchemy for read operations
     
@@ -153,10 +153,12 @@ export const getCertificateDetails = async (certificateHash) => {
     const { contract } = result;
     
     try {
-      const details = await contract.methods.getHashDetails(certificateHash).call();
+      const details = await contract.methods.getCertificateDetails(certificateHash).call();
       return {
-        institution: details[0],
-        timestamp: details[1]
+        certificateHash: details[0],
+        institution: details[1],
+        timestamp: details[2],
+        isValid: details[3]
       };
     } catch (error) {
       console.error("Error getting certificate details:", error);
