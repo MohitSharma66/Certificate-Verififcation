@@ -6,6 +6,13 @@ The application leverages blockchain technology to ensure certificate immutabili
 
 # Recent Changes
 
+## November 11, 2025 - CertificateRegistryV2 Integration Fix
+- **Fixed ABI mismatch**: Updated `server/auth.js` to load CertificateRegistryV2.json ABI instead of CertificateRegistry.json
+- **Corrected function parameters**: Fixed `server/server.js` to call `issueCertificate` with correct signature (certificateHash, instituteName) instead of incorrect 3-parameter call
+- **Aligned backend with deployed contract**: Backend now properly interfaces with CertificateRegistryV2 at 0xbB9b70BB804AFe74Fb2a9AaC9141a932C153489e
+- **Environment configuration**: Set up all required blockchain environment variables (SEPOLIA_RPC_URL, PRIVATE_KEY, CONTRACT_ADDRESS) in Replit Secrets
+- Certificate issuance now works correctly with Sepolia testnet blockchain
+
 ## November 3, 2025 - Backend Blockchain Integration
 - **Fixed blockchain connectivity**: Added `getBlockchainContract` function to `server/auth.js` enabling backend blockchain operations
 - **Implemented proper validation**: All three environment variables (SEPOLIA_RPC_URL, PRIVATE_KEY, CONTRACT_ADDRESS) now strictly enforced
