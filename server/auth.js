@@ -15,14 +15,14 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const CERTIFICATE_REGISTRY_ADDRESS = process.env.CONTRACT_ADDRESS;
 const INSTITUTE_REGISTRY_ADDRESS = process.env.INSTITUTE_REGISTRY_ADDRESS;
 
-// Load CertificateRegistry ABI
-const certificateContractPath = path.join(__dirname, '../build/contracts/CertificateRegistry.json');
+// Load CertificateRegistryV2 ABI
+const certificateContractPath = path.join(__dirname, '../build/contracts/CertificateRegistryV2.json');
 let CERTIFICATE_REGISTRY_ABI;
 try {
   const contractJson = JSON.parse(fs.readFileSync(certificateContractPath, 'utf8'));
   CERTIFICATE_REGISTRY_ABI = contractJson.abi;
 } catch (error) {
-  console.error('Warning: Could not load CertificateRegistry ABI:', error.message);
+  console.error('Warning: Could not load CertificateRegistryV2 ABI:', error.message);
   CERTIFICATE_REGISTRY_ABI = [];
 }
 
