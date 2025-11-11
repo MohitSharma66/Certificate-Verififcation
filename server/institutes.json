@@ -33,5 +33,14 @@
     "walletAddress": "0xbf8d779294b28792c1fdb5169ce8a6cb3b8ed212",
     "createdAt": "2025-11-04T17:45:28.563Z",
     "isActive": true
+  },
+  {
+    "instituteId": "1111",
+    "instituteName": "lkjhygt",
+    "passwordHash": "$2b$12$IkFa7Q5Dg7L6ZZCCQM018u2oGuZPX7bRwkmloagR6QnsTjcNLB.Dy",
+    "blockchainTxHash": "0x0dbcdd6aa59cb59ae6665d4effd0e1deaa03bde0a2cb084903cad233f6cc9426",
+    "walletAddress": "0xbf8d779294b28792c1fdb5169ce8a6cb3b8ed212",
+    "createdAt": "2025-11-11T17:00:27.066Z",
+    "isActive": true
   }
 ]
