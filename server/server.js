@@ -305,7 +305,6 @@ app.post('/certificates', authMiddleware, async (req, res) => {
       const contract = await getBlockchainContract();
       const tx = await contract.issueCertificate(
         certificateHash,
-        req.user.instituteId,
         req.user.instituteName
       );
       await tx.wait();
