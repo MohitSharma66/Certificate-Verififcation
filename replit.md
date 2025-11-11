@@ -6,6 +6,16 @@ The application leverages blockchain technology to ensure certificate immutabili
 
 # Recent Changes
 
+## November 11, 2025 - Frontend CertificateRegistryV2 Method Updates
+- **Fixed contract method calls**: Updated all frontend blockchain methods to use CertificateRegistryV2 instead of SimpleCertificateRegistry
+- **Method changes**:
+  - `issueCertificate`: Changed from calling `storeHash` to `issueCertificate`
+  - `verifyCertificate`: Changed from calling `verifyHash` to `verifyCertificate`
+  - `certificateExists`: Changed from calling `hashExists` to `certificateExists`
+  - `getCertificateDetails`: Changed from calling `getHashDetails` to `getCertificateDetails`
+- **Resolved errors**: Fixed "contract.methods.verifyHash is not a function" error
+- Certificate verification now works correctly with CertificateRegistryV2 on Sepolia
+
 ## November 11, 2025 - Complete Blockchain Environment Configuration
 - **Configured Replit Secrets**: Set up ALCHEMY_API_KEY and PRIVATE_KEY via Replit's secure secret management
 - **Automated RPC URL Construction**: Updated `server/auth.js` to automatically build SEPOLIA_RPC_URL from ALCHEMY_API_KEY
