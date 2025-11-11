@@ -247,6 +247,8 @@
     "publicKey": "777",
     "issuedBy": "1111",
     "createdAt": "2025-11-11T18:32:14.227Z",
-    "isValid": true
+    "isValid": false,
+    "revokedAt": "2025-11-11T18:40:36.127Z",
+    "revokedBy": "1111"
   }
 ]
