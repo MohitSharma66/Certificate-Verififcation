@@ -1,8 +1,13 @@
 import Web3 from 'web3';
-import SimpleCertificateRegistry from '../../../build/contracts/SimpleCertificateRegistry.json';
+import CertificateRegistryV2 from '../../../build/contracts/CertificateRegistryV2.json';
 
 // Connect to Sepolia testnet via Alchemy (for read operations)
-const alchemyWeb3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_API_KEY || 'tnJsJ2NM8IO88aZvhZHaU'}`);
+// Use ALCHEMY_API_KEY from environment
+const ALCHEMY_API_KEY = import.meta.env.VITE_ALCHEMY_API_KEY;
+if (!ALCHEMY_API_KEY) {
+  console.error('VITE_ALCHEMY_API_KEY not set. Please configure your Alchemy API key.');
+}
+const alchemyWeb3 = new Web3(`https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`);
 
 // Get MetaMask Web3 instance for transactions
 const getMetaMaskWeb3 = async () => {
@@ -32,16 +37,16 @@ const getContractInstance = async (useMetaMask = false) => {
       const networkId = await web3Instance.eth.net.getId();
       console.log("Network ID:", networkId); // Log network ID for debugging
       
-      const deployedNetwork = SimpleCertificateRegistry.networks[networkId];
+      const deployedNetwork = CertificateRegistryV2.networks[networkId];
       if (!deployedNetwork) {
-        console.error("SimpleCertificateRegistry not deployed on this network.");
+        console.error("CertificateRegistryV2 not deployed on this network.");
         return null;
       }
   
       console.log("Deployed Contract Address:", deployedNetwork.address); // Log contract address
   
       const contract = new web3Instance.eth.Contract(
-        SimpleCertificateRegistry.abi,
+        CertificateRegistryV2.abi,
         deployedNetwork.address
       );
   

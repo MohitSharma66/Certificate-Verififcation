@@ -17,6 +17,9 @@ export default defineConfig({
     'import.meta.env.VITE_BASE_URL': JSON.stringify(
       process.env.VITE_BASE_URL || 
       (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost:5000')
+    ),
+    'import.meta.env.VITE_ALCHEMY_API_KEY': JSON.stringify(
+      process.env.ALCHEMY_API_KEY || process.env.VITE_ALCHEMY_API_KEY || ''
     )
   }
 })

@@ -10,7 +10,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const SALT_ROUNDS = 12;
 
 // Blockchain configuration
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+// Construct SEPOLIA_RPC_URL from ALCHEMY_API_KEY if not directly provided
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 
+  (process.env.ALCHEMY_API_KEY ? `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}` : null);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const CERTIFICATE_REGISTRY_ADDRESS = process.env.CONTRACT_ADDRESS;
 const INSTITUTE_REGISTRY_ADDRESS = process.env.INSTITUTE_REGISTRY_ADDRESS;
